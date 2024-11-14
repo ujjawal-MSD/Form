@@ -1,9 +1,9 @@
 import React from 'react'
 import Stepper from '../Stepper';
 import AgentInformation from '../New Client/Forms/AgentInfo';
-import StagingInformation from './Forms/StagingInformation';
-import ProdInformation from './Forms/ProdInformation';
-import Finish from './Forms/Finish';
+import StagingInformation from '../New Client/Forms/StagingInformation';
+import ProdInformation from '../New Client/Forms/ProdInformation';
+import Finish from '../New Client/Forms/Finish';
 
 const ExistingClient = () => {
 

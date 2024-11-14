@@ -41,44 +41,119 @@ const AgentInformation = () => {
         { id: "Hacksaw Gaming ROW", name: "Hacksaw Gaming ROW", rtp: null },
         { id: "Hacksaw Gaming Latam", name: "Hacksaw Gaming Latam", rtp: null }
     ]);
+    const [selectedValue, setSelectedValue] = useState('');
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [isEmailError, setIsEmailError] = useState(0); // Error flag
+    const [skypeGroups, setSkypeGroups] = useState([]);
+    const [groupError, setGroupError] = useState('');
+    const [TechnicalSupportPersonnelError, setTechnicalSupportPersonnelChangeError] = useState('');
+    const [TechnicalSupportPersonnelfield, setTechnicalSupportPersonnelfield] = useState([]);
 
 
-    const handleAddField = (setState, values) => {
-        setState([...values, ""]);
-    };
 
-    const handleRemoveField = (index, setState, values) => {
-        const updatedValues = [...values];
-        updatedValues.splice(index, 1);
-        setState(updatedValues);
-    };
+    // Handle checkbox change and associated rtp logic
     const handleCheckboxChange = (index, isChecked) => {
-        const updatedProviders = [...providers];
-        updatedProviders[index].isChecked = isChecked;
-        if (!isChecked) {
-            updatedProviders[index].rtp = null; // Reset rtp when checkbox is unchecked
-        }
-        setProviders(updatedProviders);
+        setProviders((prevProviders) => {
+            const updatedProviders = [...prevProviders];
+            updatedProviders[index].isChecked = isChecked;
+            if (!isChecked) updatedProviders[index].rtp = null;
+            return updatedProviders;
+        });
     };
 
+    // Handle provider rtp change
     const handleProviderChange = (index, rtpValue) => {
-        const updatedProviders = [...providers];
-        updatedProviders[index].rtp = rtpValue;
-        setProviders(updatedProviders);
+        setProviders((prevProviders) => {
+            const updatedProviders = [...prevProviders];
+            updatedProviders[index].rtp = rtpValue;
+            return updatedProviders;
+        });
     };
+
+    // Handle selection change
+    const handleChange = (event) => setSelectedValue(event.target.value);
+
+    // Handle email validation
+    const handleEmailBlur = () => {
+        if (!email) {
+            setEmailError("The email field must have a value.");
+            setIsEmailError(1);
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            setEmailError("The email must be a valid email address.");
+            setIsEmailError(1);
+        } else {
+            setEmailError('');
+            setIsEmailError(0);
+        }
+    };
+
+    // Handle Skype Group validation
+    const handleGroupChange = (event) => {
+        const value = event.target.value;
+        if (!value.trim()) {
+            setGroupError('The Skype Group name field must have a value.');
+        } else if (skypeGroups.includes(value)) {
+            setGroupError('The Skype Group name field has a duplicate value.');
+        } else {
+            setGroupError('');
+        }
+    };
+
+
+    const handleBlur = (event) => {
+        const value = event.target.value.trim();
+        if (!value) {
+            setGroupError('The Skype Group name field must have a value.');
+        } else if (skypeGroups.includes(value)) {
+            setGroupError('The Skype Group name field has a duplicate value.');
+        } else {
+            setSkypeGroups((prevGroups) => [...prevGroups, value]);
+            setGroupError('');
+        }
+    };
+
+
+    const TechnicalSupportPersonnelChange = (event) => {
+        const value = event.target.value;
+        if (!value.trim()) {
+            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field must have a value');
+        } else if (TechnicalSupportPersonnelfield.includes(value)) {
+            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field has a duplicate value.');
+        } else {
+            setTechnicalSupportPersonnelChangeError('');
+        }
+    };
+
+    const handleTechnicalSupportPersonnelBlur = (event) => {
+        const value = event.target.value.trim();
+        if (!value.trim()) {
+            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field must have a value');
+        } else if (skypeGroups.includes(value)) {
+            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field has a duplicate value.');
+        } else {
+            setTechnicalSupportPersonnelfield((prevGroups) => [...prevGroups, value]);
+            setTechnicalSupportPersonnelChangeError('');
+        }
+    };
+
+
 
     return (
         <form className="space-y-8">
+            {/* Wallet Type */}
             <div>
-                <label className="block text-sm font-medium pl-[2px] pb-[6px] text-[#1F2225]">
+                <label className="block text-sm font-medium text-[#1F2225]">
                     Wallet Type <span className="text-red-600">*</span>
                 </label>
                 <select
-                    className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    className="bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a]"
+                    value={selectedValue}
+                    onChange={handleChange}
                 >
-                    <option value="" disabled selected className="text-[#B0B3B8]">Please Select</option>
-                    <option className="text-[#1F2225]">Transfer wallet</option>
-                    <option className="text-[#1F2225]">Seamless/Single Wallet</option>
+                    <option value="" className="hidden" disabled>Please Select</option>
+                    <option value="transfer">Transfer wallet</option>
+                    <option value="seamless">Seamless/Single Wallet</option>
                 </select>
             </div>
 
@@ -87,7 +162,16 @@ const AgentInformation = () => {
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Contact Email <span className="text-red-600">*</span>
                 </label>
-                <IncInput />
+                <IncInput
+                    value={email}
+                    type="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={handleEmailBlur} // Trigger validation on blur
+                    isError={isEmailError} // Pass error state as prop
+                />
+                {emailError && (
+                    <span className="text-red-600 text-sm">{emailError}</span>
+                )}
             </div>
 
             {/* Skype Group Name */}
@@ -95,10 +179,17 @@ const AgentInformation = () => {
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Skype Group name <span className="text-red-600">*</span>
                 </label>
-                <IncInput />
-                <p className="text-sm text-[#b19c92] mt-1">
-                    example : [Azuretech - ATA/YGG] Integration
-                </p>
+                <IncInput
+                    type="text"
+                    placeholder="Please enter Skype Group name"
+                    onChange={handleGroupChange}
+                    onBlur={handleBlur}
+                    isError={groupError ? 1 : 0} // Pass error state to IncInput
+                />
+                {groupError && (
+                    <span className="text-red-600 text-sm">{groupError}</span>
+                )}
+                <p className="text-sm text-[#b19c92] mt-1">Example: [Azuretech - ATA/YGG] Integration</p>
             </div>
 
             {/* Group Name */}
@@ -117,25 +208,30 @@ const AgentInformation = () => {
             </div>
 
 
-
             {/* Brand Name */}
             <div>
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Brand Name <span className="text-red-600">*</span>
                 </label>
                 <IncInput />
-                <p className="text-sm text-[#b19c92] mt-1">
-                    Do not use the following text as a name: group / brand / demo / test / staging / production
-                </p>
+                <p className="text-sm text-[#b19c92] mt-1">Do not use: group, brand, demo, test, staging, production</p>
             </div>
-
 
             {/* Technical Support Personnel */}
             <div>
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Technical Support Personnel <span className="text-red-600">*</span>
                 </label>
-                <IncInput />
+                <IncInput
+                    type="text"
+                    placeholder="Please enter Skype Group name"
+                    onChange={TechnicalSupportPersonnelChange}
+                    onBlur={handleTechnicalSupportPersonnelBlur}
+                    isError={TechnicalSupportPersonnelError ? 1 : 0} // Pass error state to IncInput
+                />
+                {TechnicalSupportPersonnelError && (
+                    <span className="text-red-600 text-sm">{TechnicalSupportPersonnelError}</span>
+                )}
             </div>
 
             {/* Technical Support Personnel Email */}
@@ -147,77 +243,56 @@ const AgentInformation = () => {
             </div>
 
             {/* Providers */}
-
-            <div>
-                <div className="h-6" />
-                <div className="overflow-x-auto">
-                    <table className="min-w-full table-auto border-collapse border border-gray-200">
-                        <thead className="bg-[#908D89]">
-                            <tr>
-                                <th className="border-r border-White font-normal text-sm text-white p-3 text-left">Provider</th>
-                                <th className="border-l border-White font-normal text-sm text-white p-3 text-left">RTP</th>
+            <div className="overflow-x-auto">
+                <table className="min-w-full table-auto border-collapse border border-gray-200">
+                    <thead className="bg-[#908D89]">
+                        <tr>
+                            <th className="border-r font-normal text-sm text-white p-3 text-left">Provider</th>
+                            <th className="border-l font-normal text-sm text-white p-3 text-left">RTP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {providers.map((provider, index) => (
+                            <tr key={provider.id} className="border-b border-gray-200 hover:bg-[#f7f7fa]">
+                                <td className="p-3 flex items-center border-r">
+                                    <input
+                                        type="checkbox"
+                                        id={provider.id}
+                                        className="w-4 h-4 checked:bg-green-500"
+                                        onChange={(e) => handleCheckboxChange(index, e.target.checked)}
+                                    />
+                                    <label htmlFor={provider.id} className="text-gray-700 text-sm px-2">{provider.name}</label>
+                                </td>
+                                <td className="p-3">
+                                    {["hacksaw", "nolimit city"].some(name => provider.name.toLowerCase().includes(name)) && (
+                                        <div className="flex space-x-4">
+                                            {["94", "96"].map(rtpValue => (
+                                                <label
+                                                    key={rtpValue}
+                                                    className={`inline-flex items-center text-sm px-2 ${!provider.isChecked ? 'text-gray-400' : 'text-gray-700'}`}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name={`rtp_${provider.id}`}
+                                                        value={rtpValue}
+                                                        checked={provider.rtp === rtpValue}
+                                                        onChange={() => handleProviderChange(index, rtpValue)}
+                                                        disabled={!provider.isChecked}
+                                                        className="mr-2"
+                                                    />
+                                                    {rtpValue}%
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {providers.map((provider, index) => (
-                                <tr key={provider.id} className="border-b border-gray-200 hover:bg-[#f7f7fa]">
-                                    <td className="p-3 flex items-center border-r border-gray-200">
-                                        <input
-                                            type="checkbox"
-                                            id={provider.id}
-                                            value={provider.name}
-                                            className="w-4 h-4 checked:bg-green-500"
-                                            onChange={(e) => handleCheckboxChange(index, e.target.checked)} // Handle checkbox change
-                                        />
-                                        <label htmlFor={provider.id} className="text-gray-700 text-sm px-2">
-                                            {provider.name}
-                                        </label>
-                                    </td>
-                                    <td className="p-3">
-                                        {/* Conditionally render RTP radio buttons for "Hacksaw Gaming" or "Nolimiti City" */}
-                                        {(provider.name.toLowerCase().includes("hacksaw") || provider.name.toLowerCase().includes("nolimit city")) && (
-                                            <div className="flex space-x-4">
-                                                <label
-                                                    className={`inline-flex items-center text-sm px-2 ${!provider.isChecked ? 'text-gray-400' : 'text-gray-700'}`} // Apply light color when disabled
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name={`rtp_${provider.id}`}
-                                                        value="94"
-                                                        checked={provider.rtp === "94"}
-                                                        onChange={() => handleProviderChange(index, "94")}
-                                                        className="mr-2"
-                                                        disabled={!provider.isChecked} // Disable if checkbox is not checked
-                                                    />
-                                                    94%
-                                                </label>
-                                                <label
-                                                    className={`inline-flex items-center text-sm px-2 ${!provider.isChecked ? 'text-gray-400' : 'text-gray-700'}`} // Apply light color when disabled
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name={`rtp_${provider.id}`}
-                                                        value="96"
-                                                        checked={provider.rtp === "96"}
-                                                        onChange={() => handleProviderChange(index, "96")}
-                                                        className="mr-2"
-                                                        disabled={!provider.isChecked} // Disable if checkbox is not checked
-                                                    />
-                                                    96%
-                                                </label>
-                                            </div>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-
-                        </tbody>
-                    </table>
-                </div>
-                <div className="h-6" />
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </form>
-    )
-}
+    );
+};
 
-export default AgentInformation
+export default AgentInformation;

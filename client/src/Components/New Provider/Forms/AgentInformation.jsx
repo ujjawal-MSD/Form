@@ -67,6 +67,11 @@ const AgentInformation = () => {
         setProviders(updatedProviders);
     };
 
+    const [selectedValue, setSelectedValue] = useState('');
+
+    const handleChange = (event) => {
+        setSelectedValue(event.target.value);
+    };
     return (
         <form className="space-y-8">
             <div>
@@ -74,11 +79,13 @@ const AgentInformation = () => {
                     Wallet Type <span className="text-red-600">*</span>
                 </label>
                 <select
-                    className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    className="bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    value={selectedValue}
+                    onChange={handleChange}
                 >
-                    <option value="" disabled selected className="text-[#B0B3B8]">Please Select</option>
-                    <option className="text-[#1F2225]">Transfer wallet</option>
-                    <option className="text-[#1F2225]">Seamless/Single Wallet</option>
+                    <option value="" disabled className="text-[#B0B3B8]">Please Select</option>
+                    <option value="transfer" className="text-[#1F2225]">Transfer wallet</option>
+                    <option value="seamless" className="text-[#1F2225]">Seamless/Single Wallet</option>
                 </select>
             </div>
 
@@ -90,43 +97,63 @@ const AgentInformation = () => {
                 <IncInput />
             </div>
 
-            {/* Skype Group Name */}
-            <div>
-                <label className="block text-sm font-medium text-[#1F2225]">
-                    Skype Group name <span className="text-red-600">*</span>
-                </label>
-                <IncInput />
-                <p className="text-sm text-[#b19c92] mt-1">
-                    example : [Azuretech - ATA/YGG] Integration
-                </p>
-            </div>
 
-            {/* Group Name */}
-            <div>
-                <label className="block text-sm font-medium pl-[2px] pb-[6px] text-[#1F2225]">
-                    Group Name  <span className="text-red-600">*</span>
-                </label>
-                <input
-                    type="text"
-                    placeholder="Please input"
-                    className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
-                />
-                <p className="text-sm text-[#b19c92] mt-1">
-                    Do not use the following text as a name: group / brand / demo / test / staging / production
-                </p>
+            <div className="flex justify-center space-x-3">
+                {/* Group Name */}
+                <div className="flex-1">
+                    <label className="block text-sm font-medium pl-[2px] pb-[6px] text-[#1F2225]">
+                        Group Name  <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Please input"
+                        className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    />
+                    <p className="text-sm text-[#b19c92] mt-1">
+                        Please input either Group name or Group ID
+                    </p>
+                </div>
+
+                {/* Group Name */}
+                <div className="flex-1">
+                    <label className="block text-sm font-medium pl-[2px] pb-[6px] text-[#1F2225]">
+                        Group ID  <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Please input"
+                        className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    />
+                    <p className="text-sm text-[#b19c92] mt-1">
+                        Please input either Group name or Group ID
+                    </p>
+                </div>
             </div>
 
 
 
             {/* Brand Name */}
-            <div>
-                <label className="block text-sm font-medium text-[#1F2225]">
-                    Brand Name <span className="text-red-600">*</span>
-                </label>
-                <IncInput />
-                <p className="text-sm text-[#b19c92] mt-1">
-                    Do not use the following text as a name: group / brand / demo / test / staging / production
-                </p>
+            <div className="flex justify-center space-x-3">
+                <div className="flex-1">
+                    <label className="block text-sm font-medium text-[#1F2225]">
+                        Brand Name <span className="text-red-600">*</span>
+                    </label>
+                    <IncInput type="text" placeholder="Enter Brand Name" value="Default Brand Name" />
+                    <p className="text-sm text-[#b19c92] mt-1">
+                        Please input either Brand name or Brand ID
+                    </p>
+                </div>
+
+                {/* Brand Name */}
+                <div className="flex-1">
+                    <label className="block text-sm font-medium text-[#1F2225]">
+                        Brand ID <span className="text-red-600">*</span>
+                    </label>
+                    <IncInput type='text' placeholder="please input email" value="123" />
+                    <p className="text-sm text-[#b19c92] mt-1">
+                        Please input either Brand name or Brand ID
+                    </p>
+                </div>
             </div>
 
 
