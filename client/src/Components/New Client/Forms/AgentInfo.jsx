@@ -3,140 +3,208 @@ import IncInput from '../../IncInput';
 
 const AgentInformation = () => {
     const [providers, setProviders] = useState([
-        { id: "DCACE", name: "DCACE", rtp: null },
-        { id: "Yggdrasil Gaming", name: "Yggdrasil Gaming", rtp: null },
-        { id: "Nolimit City", name: "Nolimit City", rtp: null },
-        { id: "Relax Gaming", name: "Relax Gaming", rtp: null },
-        { id: "Ezugi", name: "Ezugi", rtp: null },
-        { id: "AvatarUX", name: "AvatarUX", rtp: null },
-        { id: "Play'n GO", name: "Play'n GO", rtp: null },
-        { id: "GAMOMAT", name: "GAMOMAT", rtp: null },
-        { id: "Evoplay", name: "Evoplay", rtp: null },
-        { id: "Hacksaw Gaming", name: "Hacksaw Gaming", rtp: null },
-        { id: "FunTa Gaming", name: "FunTa Gaming", rtp: null },
-        { id: "Push Gaming", name: "Push Gaming", rtp: null },
-        { id: "WIN FAST", name: "WIN FAST", rtp: null },
-        { id: "ParlayBay", name: "ParlayBay", rtp: null },
-        { id: "Evolution", name: "Evolution", rtp: null },
-        { id: "Slotmill", name: "Slotmill", rtp: null },
-        { id: "Big Time Gaming", name: "Big Time Gaming", rtp: null },
-        { id: "NetEnt", name: "NetEnt", rtp: null },
-        { id: "Red Tiger Gaming", name: "Red Tiger Gaming", rtp: null },
-        { id: "7Mojos", name: "7Mojos", rtp: null },
-        { id: "Fantasma Games", name: "Fantasma Games", rtp: null },
-        { id: "Peter & Sons", name: "Peter & Sons", rtp: null },
-        { id: "SPRIBE", name: "SPRIBE", rtp: null },
-        { id: "SmartSoft", name: "SmartSoft", rtp: null },
-        { id: "Voltent (Wazdan)", name: "Voltent (Wazdan)", rtp: null },
-        { id: "Thunderkick", name: "Thunderkick", rtp: null },
-        { id: "Turbo Games (Asia)", name: "Turbo Games (Asia)", rtp: null },
-        { id: "Lucky Monaco", name: "Lucky Monaco", rtp: null },
-        { id: "Turbo Games (rest of World)", name: "Turbo Games (rest of World)", rtp: null },
-        { id: "BGaming", name: "BGaming", rtp: null },
-        { id: "SA Gaming", name: "SA Gaming", rtp: null },
-        { id: "Yolted", name: "Yolted", rtp: null },
-        { id: "BluePrint", name: "BluePrint", rtp: null },
-        { id: "Octoplay", name: "Octoplay", rtp: null },
-        { id: "Novomatic", name: "Novomatic", rtp: null },
-        { id: "Hacksaw Gaming ROW", name: "Hacksaw Gaming ROW", rtp: null },
-        { id: "Hacksaw Gaming Latam", name: "Hacksaw Gaming Latam", rtp: null }
+        { id: "DCACE", name: "DCACE", isChecked: false, rtp: null  },
+        { id: "Yggdrasil Gaming", name: "Yggdrasil Gaming", isChecked: false, rtp: null },
+        { id: "Nolimit City", name: "Nolimit City", isChecked: false, rtp: null },
+        { id: "Relax Gaming", name: "Relax Gaming", isChecked: false, rtp: null },
+        { id: "Ezugi", name: "Ezugi", isChecked: false, rtp: null },
+        { id: "AvatarUX", name: "AvatarUX", isChecked: false, rtp: null },
+        { id: "Play'n GO", name: "Play'n GO", isChecked: false, rtp: null },
+        { id: "GAMOMAT", name: "GAMOMAT", isChecked: false, rtp: null },
+        { id: "Evoplay", name: "Evoplay", isChecked: false, rtp: null },
+        { id: "Hacksaw Gaming", name: "Hacksaw Gaming", isChecked: false, rtp: null },
+        { id: "FunTa Gaming", name: "FunTa Gaming", isChecked: false, rtp: null },
+        { id: "Push Gaming", name: "Push Gaming", isChecked: false, rtp: null },
+        { id: "WIN FAST", name: "WIN FAST", isChecked: false, rtp: null },
+        { id: "ParlayBay", name: "ParlayBay", isChecked: false, rtp: null },
+        { id: "Evolution", name: "Evolution", isChecked: false, rtp: null },
+        { id: "Slotmill", name: "Slotmill", isChecked: false, rtp: null },
+        { id: "Big Time Gaming", name: "Big Time Gaming", isChecked: false, rtp: null },
+        { id: "NetEnt", name: "NetEnt", isChecked: false, rtp: null },
+        { id: "Red Tiger Gaming", name: "Red Tiger Gaming", isChecked: false, rtp: null },
+        { id: "7Mojos", name: "7Mojos", isChecked: false, rtp: null },
+        { id: "Fantasma Games", name: "Fantasma Games", isChecked: false, rtp: null },
+        { id: "Peter & Sons", name: "Peter & Sons", isChecked: false, rtp: null },
+        { id: "SPRIBE", name: "SPRIBE", isChecked: false, rtp: null },
+        { id: "SmartSoft", name: "SmartSoft", isChecked: false, rtp: null },
+        { id: "Voltent (Wazdan)", name: "Voltent (Wazdan)", isChecked: false, rtp: null },
+        { id: "Thunderkick", name: "Thunderkick", isChecked: false, rtp: null },
+        { id: "Turbo Games (Asia)", name: "Turbo Games (Asia)", isChecked: false, rtp: null },
+        { id: "Lucky Monaco", name: "Lucky Monaco", isChecked: false, rtp: null },
+        { id: "Turbo Games (rest of World)", name: "Turbo Games (rest of World)", isChecked: false, rtp: null },
+        { id: "BGaming", name: "BGaming", isChecked: false, rtp: null },
+        { id: "SA Gaming", name: "SA Gaming", isChecked: false, rtp: null },
+        { id: "Yolted", name: "Yolted", isChecked: false, rtp: null },
+        { id: "BluePrint", name: "BluePrint", isChecked: false, rtp: null },
+        { id: "Octoplay", name: "Octoplay", isChecked: false, rtp: null },
+        { id: "Novomatic", name: "Novomatic", isChecked: false, rtp: null },
+        { id: "Hacksaw Gaming ROW", name: "Hacksaw Gaming ROW", isChecked: false, rtp: null },
+        { id: "Hacksaw Gaming Latam", name: "Hacksaw Gaming Latam", isChecked: false, rtp: null }
     ]);
+
+    // Handle Checkbox selection change
+    const [providerError, setProviderError] = useState('');
     const [selectedValue, setSelectedValue] = useState('');
-    const [email, setEmail] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [isEmailError, setIsEmailError] = useState(0); // Error flag
-    const [skypeGroups, setSkypeGroups] = useState([]);
-    const [groupError, setGroupError] = useState('');
-    const [TechnicalSupportPersonnelError, setTechnicalSupportPersonnelChangeError] = useState('');
-    const [TechnicalSupportPersonnelfield, setTechnicalSupportPersonnelfield] = useState([]);
 
-
-
-    // Handle checkbox change and associated rtp logic
-    const handleCheckboxChange = (index, isChecked) => {
-        setProviders((prevProviders) => {
-            const updatedProviders = [...prevProviders];
-            updatedProviders[index].isChecked = isChecked;
-            if (!isChecked) updatedProviders[index].rtp = null;
-            return updatedProviders;
-        });
-    };
-
-    // Handle provider rtp change
-    const handleProviderChange = (index, rtpValue) => {
-        setProviders((prevProviders) => {
-            const updatedProviders = [...prevProviders];
-            updatedProviders[index].rtp = rtpValue;
-            return updatedProviders;
-        });
-    };
-
-    // Handle selection change
     const handleChange = (event) => setSelectedValue(event.target.value);
 
-    // Handle email validation
-    const handleEmailBlur = () => {
-        if (!email) {
-            setEmailError("The email field must have a value.");
-            setIsEmailError(1);
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            setEmailError("The email must be a valid email address.");
-            setIsEmailError(1);
+    const handleCheckboxChange = (index, isChecked) => {
+        const updatedProviders = [...providers];
+        updatedProviders[index].isChecked = isChecked;
+        if (!isChecked) updatedProviders[index].rtp = null;
+        setProviders(updatedProviders);
+
+        // Check if no checkboxes are checked
+        if (!updatedProviders.some(provider => provider.isChecked)) {
+            setProviderError('Please check at least one provider.');
         } else {
-            setEmailError('');
-            setIsEmailError(0);
+            setProviderError('');
         }
+    };
+
+    const handleProviderChange = (index, rtpValue) => {
+        const updatedProviders = [...providers];
+        updatedProviders[index].rtp = rtpValue;
+        setProviders(updatedProviders);
+
+        // Check if the provider is checked and has an RTP value
+        if (updatedProviders[index].isChecked && !updatedProviders[index].rtp) {
+            setProviderError('Please select RTP for the checked provider.');
+        } else {
+            setProviderError('');
+        }
+    };
+
+    const validateProviders = () => {
+        const checkedProviders = providers.filter(provider => provider.isChecked);
+        if (checkedProviders.length === 0) {
+            setProviderError('Please check at least one provider.');
+            return false;
+        }
+        for (const provider of checkedProviders) {
+            if (["hacksaw", "nolimit city"].some(name => provider.name.toLowerCase().includes(name)) && !provider.rtp) {
+                setProviderError('Please select RTP for the checked provider.');
+                return false;
+            }
+        }
+        setProviderError('');
+        return true;
     };
 
     // Handle Skype Group validation
-    const handleGroupChange = (event) => {
-        const value = event.target.value;
-        if (!value.trim()) {
-            setGroupError('The Skype Group name field must have a value.');
-        } else if (skypeGroups.includes(value)) {
-            setGroupError('The Skype Group name field has a duplicate value.');
-        } else {
-            setGroupError('');
-        }
-    };
-
-
-    const handleBlur = (event) => {
+    const [skypeGroups, setSkypeGroups] = useState([]);
+    const [groupError, setGroupError] = useState('');
+    const handleGroupValidation = (event) => {
         const value = event.target.value.trim();
         if (!value) {
             setGroupError('The Skype Group name field must have a value.');
         } else if (skypeGroups.includes(value)) {
             setGroupError('The Skype Group name field has a duplicate value.');
         } else {
-            setSkypeGroups((prevGroups) => [...prevGroups, value]);
             setGroupError('');
+            if (event.type === 'blur') {
+                setSkypeGroups((prevGroups) => [...prevGroups, value]);
+            }
         }
     };
 
 
-    const TechnicalSupportPersonnelChange = (event) => {
-        const value = event.target.value;
-        if (!value.trim()) {
-            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field must have a value');
-        } else if (TechnicalSupportPersonnelfield.includes(value)) {
-            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field has a duplicate value.');
-        } else {
-            setTechnicalSupportPersonnelChangeError('');
-        }
-    };
-
-    const handleTechnicalSupportPersonnelBlur = (event) => {
+    // Handle Technical Support Personnal validation
+    const [technicalSupport, setTechnicalSupport] = useState([]);
+    const [technicalSupportError, setTechnicalSupportError] = useState('');
+    const handeltechnicalSupportValidation = (event) => {
         const value = event.target.value.trim();
-        if (!value.trim()) {
-            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field must have a value');
-        } else if (skypeGroups.includes(value)) {
-            setTechnicalSupportPersonnelChangeError('The Technical Support Personnel field has a duplicate value.');
+        if (!value) {
+            setTechnicalSupportError('The Technical Support Personnel field must have a value.');
+        } else if (technicalSupport.includes(value)) {
+            setTechnicalSupportError('The  Technical Support Personnel field has a duplicate value.');
         } else {
-            setTechnicalSupportPersonnelfield((prevGroups) => [...prevGroups, value]);
-            setTechnicalSupportPersonnelChangeError('');
+            setTechnicalSupportError('');
+            if (event.type === 'blur') {
+                setTechnicalSupport((prevGroups) => [...prevGroups, value]);
+            }
         }
     };
 
+
+    // Handle Technical Support Personnal Email validation
+    const [technicalEmail, setTechnicalEmail] = useState([]);
+    const [technicalEmailError, setTechnicalEmailError] = useState('');
+    const handeltechnicalEmailValidation = (event) => {
+        const value = event.target.value.trim();
+        if (!value) {
+            setTechnicalEmailError('The Technical Support Personnel Email field must have a value.');
+        } else if (technicalEmail.includes(value)) {
+            setTechnicalEmailError('The  Technical Support Personnel Email field has a duplicate value.');
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+            setTechnicalEmailError('The Technical Support Personnel Email must be a valid email address.');
+        } else {
+            setTechnicalEmailError('');
+            if (event.type === 'blur') {
+                setTechnicalEmail((prevGroups) => [...prevGroups, value]);
+            }
+        }
+    };
+
+
+    // Handle Contact Email validation
+    const [contactEmail, setContactEmail] = useState([]);
+    const [contactEmailError, setContactEmailError] = useState('');
+    const handelContactEmailValidation = (event) => {
+        const value = event.target.value.trim();
+        if (!value) {
+            setContactEmailError('The email field must have a value.');
+        } else if (contactEmail.includes(value)) {
+            setContactEmailError('The email field has a duplicate value.');
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+            setContactEmailError('The email must be a valid email address.');
+        } else {
+            setContactEmailError('');
+            if (event.type === 'blur') {
+                setContactEmail((prevGroups) => [...prevGroups, value]);
+            }
+        }
+    };
+
+    const invalidNames = /group|brand|demo|test|staging|production/i;
+
+    // Handle Brand Name validation
+    const [brand, setBrand] = useState([]);
+    const [brandError, setBrandError] = useState('');
+    const handleBrandValidation = (event) => {
+        const value = event.target.value.trim();
+        if (!value) {
+            setBrandError('The Brand Name field must have a value.');
+        } else if (brand.includes(value)) {
+            setBrandError('The Brand Name field has a duplicate value.');
+        } else if (invalidNames.test(value)) {
+            setBrandError('The Brand Name is not valid.');
+        } else {
+            setBrandError('');
+            if (event.type === 'blur') {
+                setBrand((prevGroups) => [...prevGroups, value]);
+            }
+        }
+    };
+
+    // Handle Group Name validation
+    const [groupName, setGroupName] = useState([]);
+    const [groupNameError, setGroupNameError] = useState('');
+    const handleGroupNameValidation = (event) => {
+        const value = event.target.value.trim();
+        if (!value) {
+            setGroupNameError('The Group Name field must have a value.');
+        } else if (groupName.includes(value)) {
+            setGroupNameError('The Group Name field has a duplicate value.');
+        } else if (invalidNames.test(value)) {
+            setGroupNameError('The Group Name is not valid.');
+        } else {
+            setGroupNameError('');
+            if (event.type === 'blur') {
+                setGroupName((prevGroups) => [...prevGroups, value]);
+            }
+        }
+    };
 
 
     return (
@@ -163,14 +231,13 @@ const AgentInformation = () => {
                     Contact Email <span className="text-red-600">*</span>
                 </label>
                 <IncInput
-                    value={email}
                     type="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={handleEmailBlur} // Trigger validation on blur
-                    isError={isEmailError} // Pass error state as prop
+                    onChange={handelContactEmailValidation}
+                    onBlur={handelContactEmailValidation}
+                    isError={contactEmailError ? 1 : 0} // Pass error state to IncInput
                 />
-                {emailError && (
-                    <span className="text-red-600 text-sm">{emailError}</span>
+                {contactEmailError && (
+                    <span className="text-red-600 text-sm">{contactEmailError}</span>
                 )}
             </div>
 
@@ -181,9 +248,9 @@ const AgentInformation = () => {
                 </label>
                 <IncInput
                     type="text"
-                    placeholder="Please enter Skype Group name"
-                    onChange={handleGroupChange}
-                    onBlur={handleBlur}
+                    placeholder="Please input"
+                    onChange={handleGroupValidation}
+                    onBlur={handleGroupValidation}
                     isError={groupError ? 1 : 0} // Pass error state to IncInput
                 />
                 {groupError && (
@@ -201,7 +268,13 @@ const AgentInformation = () => {
                     type="text"
                     placeholder="Please input"
                     className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    onChange={handleGroupNameValidation}
+                    onBlur={handleGroupNameValidation}
+                    isError={groupNameError ? 1 : 0} // Pass error state to IncInput
                 />
+                {groupNameError && (
+                    <span className="text-red-600 text-sm">{groupNameError}</span>
+                )}
                 <p className="text-sm text-[#b19c92] mt-1">
                     Do not use the following text as a name: group / brand / demo / test / staging / production
                 </p>
@@ -213,8 +286,17 @@ const AgentInformation = () => {
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Brand Name <span className="text-red-600">*</span>
                 </label>
-                <IncInput />
-                <p className="text-sm text-[#b19c92] mt-1">Do not use: group, brand, demo, test, staging, production</p>
+                <IncInput
+                    type="text"
+                    placeholder="Please input"
+                    onChange={handleBrandValidation}
+                    onBlur={handleBrandValidation}
+                    isError={brandError ? 1 : 0} // Pass error state to IncInput
+                />
+                {brandError && (
+                    <span className="text-red-600 text-sm">{brandError}</span>
+                )}
+                <p className="text-sm text-[#b19c92] mt-1">Do not use the following text as a name: group / brand / demo / test / staging / production</p>
             </div>
 
             {/* Technical Support Personnel */}
@@ -224,13 +306,13 @@ const AgentInformation = () => {
                 </label>
                 <IncInput
                     type="text"
-                    placeholder="Please enter Skype Group name"
-                    onChange={TechnicalSupportPersonnelChange}
-                    onBlur={handleTechnicalSupportPersonnelBlur}
-                    isError={TechnicalSupportPersonnelError ? 1 : 0} // Pass error state to IncInput
+                    placeholder="Please input"
+                    onChange={handeltechnicalSupportValidation}
+                    onBlur={handeltechnicalSupportValidation}
+                    isError={technicalSupportError ? 1 : 0} // Pass error state to IncInput
                 />
-                {TechnicalSupportPersonnelError && (
-                    <span className="text-red-600 text-sm">{TechnicalSupportPersonnelError}</span>
+                {technicalSupportError && (
+                    <span className="text-red-600 text-sm">{technicalSupportError}</span>
                 )}
             </div>
 
@@ -239,7 +321,16 @@ const AgentInformation = () => {
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Technical Support Personnel Email <span className="text-red-600">*</span>
                 </label>
-                <IncInput />
+                <IncInput
+                    type="email"
+                    placeholder="Please input"
+                    onChange={handeltechnicalEmailValidation}
+                    onBlur={handeltechnicalEmailValidation}
+                    isError={technicalEmailError ? 1 : 0} // Pass error state to IncInput
+                />
+                {technicalEmailError && (
+                    <span className="text-red-600 text-sm">{technicalEmailError}</span>
+                )}
             </div>
 
             {/* Providers */}
@@ -290,6 +381,9 @@ const AgentInformation = () => {
                         ))}
                     </tbody>
                 </table>
+                {providerError && (
+                    <span className="text-red-600 text-sm">{providerError}</span>
+                )}
             </div>
         </form>
     );
