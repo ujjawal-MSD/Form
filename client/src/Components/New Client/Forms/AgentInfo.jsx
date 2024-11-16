@@ -3,7 +3,7 @@ import IncInput from '../../IncInput';
 
 const AgentInformation = () => {
     const [providers, setProviders] = useState([
-        { id: "DCACE", name: "DCACE", isChecked: false, rtp: null  },
+        { id: "DCACE", name: "DCACE", isChecked: false, rtp: null },
         { id: "Yggdrasil Gaming", name: "Yggdrasil Gaming", isChecked: false, rtp: null },
         { id: "Nolimit City", name: "Nolimit City", isChecked: false, rtp: null },
         { id: "Relax Gaming", name: "Relax Gaming", isChecked: false, rtp: null },
@@ -42,21 +42,29 @@ const AgentInformation = () => {
         { id: "Hacksaw Gaming Latam", name: "Hacksaw Gaming Latam", isChecked: false, rtp: null }
     ]);
 
+    // handel dropdown changes 
+    const [selectedValue, setSelectedValue] = useState('');
+    const handleChange = (event) => setSelectedValue(event.target.value);
+
+
     // Handle Checkbox selection change
     const [providerError, setProviderError] = useState('');
-    const [selectedValue, setSelectedValue] = useState('');
-
-    const handleChange = (event) => setSelectedValue(event.target.value);
 
     const handleCheckboxChange = (index, isChecked) => {
         const updatedProviders = [...providers];
         updatedProviders[index].isChecked = isChecked;
-        if (!isChecked) updatedProviders[index].rtp = null;
+        if (!isChecked) updatedProviders[index].rtp = null; // Reset RTP if unchecked
         setProviders(updatedProviders);
 
-        // Check if no checkboxes are checked
+        // Real-time validation: Check if the provider needs an RTP value when checked
         if (!updatedProviders.some(provider => provider.isChecked)) {
-            setProviderError('Please check at least one provider.');
+            setProviderError('The Provider field is required.');
+        } else if (
+            isChecked &&
+            ["hacksaw", "nolimit city"].some(name => updatedProviders[index].name.toLowerCase().includes(name)) &&
+            !updatedProviders[index].rtp
+        ) {
+            setProviderError('The RTP field is required.');
         } else {
             setProviderError('');
         }
@@ -67,28 +75,10 @@ const AgentInformation = () => {
         updatedProviders[index].rtp = rtpValue;
         setProviders(updatedProviders);
 
-        // Check if the provider is checked and has an RTP value
-        if (updatedProviders[index].isChecked && !updatedProviders[index].rtp) {
-            setProviderError('Please select RTP for the checked provider.');
-        } else {
+        // Real-time validation: Clear error if RTP is selected for the checked provider
+        if (updatedProviders[index].isChecked && rtpValue) {
             setProviderError('');
         }
-    };
-
-    const validateProviders = () => {
-        const checkedProviders = providers.filter(provider => provider.isChecked);
-        if (checkedProviders.length === 0) {
-            setProviderError('Please check at least one provider.');
-            return false;
-        }
-        for (const provider of checkedProviders) {
-            if (["hacksaw", "nolimit city"].some(name => provider.name.toLowerCase().includes(name)) && !provider.rtp) {
-                setProviderError('Please select RTP for the checked provider.');
-                return false;
-            }
-        }
-        setProviderError('');
-        return true;
     };
 
     // Handle Skype Group validation
@@ -166,9 +156,9 @@ const AgentInformation = () => {
         }
     };
 
-    const invalidNames = /group|brand|demo|test|staging|production/i;
 
     // Handle Brand Name validation
+    const invalidNames = /group|brand|demo|test|staging|production/i;
     const [brand, setBrand] = useState([]);
     const [brandError, setBrandError] = useState('');
     const handleBrandValidation = (event) => {
@@ -188,21 +178,20 @@ const AgentInformation = () => {
     };
 
     // Handle Group Name validation
-    const [groupName, setGroupName] = useState([]);
     const [groupNameError, setGroupNameError] = useState('');
+    const [isGroupHasError, setIsGroupHasError] = useState(false);
+
     const handleGroupNameValidation = (event) => {
         const value = event.target.value.trim();
         if (!value) {
+            setIsGroupHasError(true);
             setGroupNameError('The Group Name field must have a value.');
-        } else if (groupName.includes(value)) {
-            setGroupNameError('The Group Name field has a duplicate value.');
         } else if (invalidNames.test(value)) {
+            setIsGroupHasError(true);
             setGroupNameError('The Group Name is not valid.');
         } else {
+            setIsGroupHasError(false);
             setGroupNameError('');
-            if (event.type === 'blur') {
-                setGroupName((prevGroups) => [...prevGroups, value]);
-            }
         }
     };
 
@@ -267,10 +256,11 @@ const AgentInformation = () => {
                 <input
                     type="text"
                     placeholder="Please input"
-                    className=" bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    className={`w-full text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)]
+                    ${isGroupHasError ? 'border-red-600 hover:border-red-600 focus:border-red-600 focus:shadow-[#ad36365d]' :
+                            'border-gray-300 hover:border-[#36ad6a] focus:border-[#36ad6a] focus:shadow-[#36ad695d]'}`}
                     onChange={handleGroupNameValidation}
                     onBlur={handleGroupNameValidation}
-                    isError={groupNameError ? 1 : 0} // Pass error state to IncInput
                 />
                 {groupNameError && (
                     <span className="text-red-600 text-sm">{groupNameError}</span>

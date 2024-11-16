@@ -24,10 +24,6 @@ const IncInput = ({ type = "text", placeholder = "Please input", value = '', onC
         }
     };
 
-    const inputClassName = isError
-        ? "flex-1 text-sm font-thin border pl-3 border-red-600 rounded-sm p-[6px] shadow-sm hover:border-red-600 focus:border-red-600 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-red-600"
-        : "flex-1 text-sm font-thin border pl-3 border-gray-300 rounded-sm p-[6px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]";
-
     return (
         <>
             {fields.map((field, index) => (
@@ -50,19 +46,22 @@ const IncInput = ({ type = "text", placeholder = "Please input", value = '', onC
                         :
                         <div className='flex-1 w-full '>
                             <input
-                                type={type}
-                                value={field.value}
+                                type="name"
                                 onChange={(event) => handleFieldChange(index, event)}
-                                placeholder={placeholder}
-                                className=" w-1/2 text-sm font-thin border pl-3 border-gray-300 rounded-l-sm p-[6px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                                placeholder="Please input account name"
+                                className={`w-1/2 text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)]
+                            ${isError ? 'border-red-600 hover:border-red-600 focus:border-red-600 focus:shadow-[#ad36365d]'
+                                        : 'border-gray-300 hover:border-[#36ad6a] focus:border-[#36ad6a] focus:shadow-[#36ad695d]'}`
+                                }
                             />
                             <input
-                                type={type}
-                                value={field.value}
+                                type="password"
                                 onChange={(event) => handleFieldChange(index, event)}
-                                placeholder={placeholder}
-                                className="  w-1/2 text-sm font-thin border pl-3 border-gray-300 rounded-r-sm p-[6px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
-                            />
+                                placeholder="Please input password"
+                                className={`w-1/2 text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)]
+                            ${isError ? 'border-red-600 hover:border-red-600 focus:border-red-600 focus:shadow-[#ad36365d]'
+                                        : 'border-gray-300 hover:border-[#36ad6a] focus:border-[#36ad6a] focus:shadow-[#36ad695d]'}`
+                                } />
                         </div>
                     }
 
