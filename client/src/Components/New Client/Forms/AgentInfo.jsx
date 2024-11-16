@@ -44,7 +44,23 @@ const AgentInformation = () => {
 
     // handel dropdown changes 
     const [selectedValue, setSelectedValue] = useState('');
-    const handleChange = (event) => setSelectedValue(event.target.value);
+    const [value, setValue] = useState('');
+    const [walletTypeError, setWalletTypeError] = useState('');
+
+    const handleWalletTypeValidation = (event) => {
+        const value = event.target.value.trim();
+        if (!value) {
+            setWalletTypeError('The Wallet Type field must have a value.');
+        } else {
+            setWalletTypeError('');
+        }
+    };
+
+    const handleChange = (event) => {
+        setValue(event.target.value);
+        setSelectedValue(event.target.value);
+        handleWalletTypeValidation(event); // Validate on change
+    };
 
 
     // Handle Checkbox selection change
@@ -180,9 +196,13 @@ const AgentInformation = () => {
     // Handle Group Name validation
     const [groupNameError, setGroupNameError] = useState('');
     const [isGroupHasError, setIsGroupHasError] = useState(false);
+    const [groupName, setGroupName] = useState('');
+
 
     const handleGroupNameValidation = (event) => {
         const value = event.target.value.trim();
+        setGroupName(value);  // Update the group name value in state
+
         if (!value) {
             setIsGroupHasError(true);
             setGroupNameError('The Group Name field must have a value.');
@@ -195,23 +215,90 @@ const AgentInformation = () => {
         }
     };
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        let formIsValid = true;
+
+        // Check if required fields are empty and set errors accordingly
+        if (!selectedValue) {
+            formIsValid = false;
+            setProviderError('The Provider field must have a value.');
+        }
+        if (!contactEmail.length) {
+            formIsValid = false;
+            setContactEmailError('The Contact Email field must have a value.');
+        }
+        if (!skypeGroups.length) {
+            formIsValid = false;
+            setGroupError('The Skype Group Name field must have a value.');
+        }
+        if (!groupName.trim()) {
+            formIsValid = false;
+            setGroupNameError('The Group Name field must have a value.');
+        }
+        if (!brand.length) {
+            formIsValid = false;
+            setBrandError('The Brand Name field must have a value.');
+        }
+        if (!technicalSupport.length) {
+            formIsValid = false;
+            setTechnicalSupportError('The Technical Support Personnel field must have a value.');
+        }
+        if (!technicalEmail.length) {
+            formIsValid = false;
+            setTechnicalEmailError('The Technical Support Personnel Email field must have a value.');
+        }
+        if (!value) {
+            formIsValid = false;
+            setWalletTypeError('The Wallet Type field must have a value.');
+        }
+
+        // If form is invalid, stop form submission
+        if (!formIsValid) {
+            return;
+        }
+
+        // Filter only checked providers
+        const checkedProviders = providers.filter(provider => provider.isChecked);
+
+        const formData = {
+            selectedValue,
+            checkedProviders, // Only the checked providers
+            skypeGroups,
+            technicalSupport,
+            technicalEmail,
+            contactEmail,
+            brand,
+            groupName,  // Add Group Name to the form data
+        };
+
+        console.log(formData); // Check the filtered data
+    };
+
 
     return (
-        <form className="space-y-8">
+        <form className="space-y-8" onSubmit={handleSubmit}>
             {/* Wallet Type */}
             <div>
                 <label className="block text-sm font-medium text-[#1F2225]">
                     Wallet Type <span className="text-red-600">*</span>
                 </label>
                 <select
-                    className="bg-transparent border-gray-300 w-full text-sm font-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a]"
-                    value={selectedValue}
+                    className={`w-full bg-transparent text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)]
+                ${walletTypeError ? 'border-red-600 hover:border-red-600 focus:border-red-600 focus:shadow-[#ad36365d]' :
+                            'border-gray-300 hover:border-[#36ad6a] focus:border-[#36ad6a] focus:shadow-[#36ad695d]'}`}
+                    value={value}
                     onChange={handleChange}
+                    onBlur={handleWalletTypeValidation} // Validate on blur
                 >
                     <option value="" className="hidden" disabled>Please Select</option>
                     <option value="transfer">Transfer wallet</option>
                     <option value="seamless">Seamless/Single Wallet</option>
                 </select>
+                {walletTypeError && (
+                    <span className="text-red-600 text-sm">{walletTypeError}</span>
+                )}
             </div>
 
             {/* Contact Email */}
@@ -375,7 +462,14 @@ const AgentInformation = () => {
                     <span className="text-red-600 text-sm">{providerError}</span>
                 )}
             </div>
+
+
+            <button type="submit" className="btn btn-primary">
+                Submit
+            </button>
         </form>
+
+
     );
 };
 
