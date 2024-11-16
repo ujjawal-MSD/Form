@@ -6,7 +6,9 @@ const StagingInformation = () => {
 
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+    const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
+    const [ipError, setIpError] = useState('');
 
     const handleFieldChange = (field, value) => {
         if (field === 'name') {
@@ -28,6 +30,18 @@ const StagingInformation = () => {
             setError('');
         }
     };
+
+    const handleIpChange = value => {
+        setIpAddress(value);
+        const ipv4Regex =
+            /^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$/;
+        if (value && !ipv4Regex.test(value)) {
+            setIpError(`The IP ["${value}"] must be a valid IPv4 address.`);
+        } else {
+            setIpError('');
+        }
+    };
+
 
     return (
         <form >
@@ -66,10 +80,15 @@ const StagingInformation = () => {
                     <label className="block text-sm font-medium text-[#1F2225]">
                         IP Address <span className="text-red-600">*</span>
                     </label>
-                    <IncInput />
-                    <p className="text-sm text-[#b19c92] mt-1">
-                        Up to 20 , currently : 1
-                    </p>
+                    <IncInput
+                        type="text"
+                        placeholder="Enter IP Address"
+                        value={ipAddress}
+                        onChange={e => handleIpChange(e.target.value)}
+                        className="bg-transparent border-gray-300 w-full text-sm border pl-[10px] rounded-[3px] p-[7px] shadow-sm hover:border-[#36ad6a] focus:border-[#36ad6a] focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] focus:shadow-[#36ad695d]"
+                    />
+                    <p className="text-sm text-[#b19c92] mt-1">Up to 20, currently: {ipAddress.length}</p>
+                    {ipError && <p className="text-red-600 text-sm">{ipError}</p>}
                 </div>
             </div>
         </form>
