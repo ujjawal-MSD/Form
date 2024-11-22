@@ -5,6 +5,7 @@ import StepTwo from "../StepTwo";
 import StepThree from "../StepThree";
 import StepFour from "../StepFour";
 import FinalStep from "../FinalStep";
+import axios from 'axios';
 
 // Validation Functions
 const validateEmail = (email) => {
@@ -47,13 +48,18 @@ const NewClient = () => {
         otherCountry: "",
         adminEmail: [""],
 
-        endPoint: [""],
-        lobbyUrl: [""],
-        loginCredentials: [[{ accountName: "", password: "" }]],
-        ipAddress: [[""]],
-        provider: [],
+        endPoint: "",
+        lobbyUrl: "",
+        loginCredentials: [{ accountName: "", password: "" }],
+        ipAddress: [""],
 
-        confirmPassword: "",
+
+        prodEndPoint: "",
+        prodLobbyUrl: "",
+        prodLoginCredentials: [{ accountName: "", password: "" }],
+        prodIpAddress: [""],
+
+        provider: [],
     });
 
     const [errors, setErrors] = useState({});
@@ -234,7 +240,49 @@ const NewClient = () => {
         }
 
         if (currentStep === 4) {
-            // tempErrors.confirmPassword = "Passwords do not match.";
+            if (!formData.prodEndPoint) {
+                tempErrors.prodEndPoint = "The End Point field must have a value.";
+            } else if (!(formData.prodEndPoint.startsWith("https://") || formData.prodEndPoint.startsWith("http://"))) {
+                tempErrors.prodEndPoint = "The End Point must start with one of the following: http:// or https://.";
+            }
+
+
+            if (formData.prodLobbyUrl.length >= 200) {
+                tempErrors.prodLobbyUrl = "The Lobby Url must be less than 200 characters.";
+            }
+
+
+            if (formData.prodLoginCredentials.some(cred => (cred.accountName && !cred.password) || (!cred.accountName && cred.password))) {
+                // Check for missing fields in login credentials
+                tempErrors.prodLoginCredentials = formData.prodLoginCredentials.map((cred, index) => {
+                    if ((cred.accountName && !cred.password) || (!cred.accountName && cred.password)) {
+                        return `Login credentials at index ${index} are incomplete.`;
+                    }
+                    return null; // No error for this credential
+                }).filter(error => error !== null); // Remove null entries
+            }
+
+            if (checkForDuplicateCredentials(formData.prodLoginCredentials)) {
+                tempErrors.prodLoginCredentials = tempErrors.prodLoginCredentials || [];
+                tempErrors.prodLoginCredentials.push("Duplicate login credentials are not allowed.");
+            }
+
+
+
+
+
+
+            if (formData.prodIpAddress.some(ip => !ip.trim())) {
+                tempErrors.prodIpAddress = "The IP field must have a value.";
+            } else {
+                formData.prodIpAddress.forEach((ip, index) => {
+                    if (ip && !ipv4Regex.test(ip)) {
+                        tempErrors.prodIpAddress = tempErrors.prodIpAddress || [];
+                        tempErrors.prodIpAddress[index] = (`The IP ["${ip}"] must be a valid IPv4 address.`)
+                    }
+                });
+            }
+
         }
 
         setErrors(tempErrors);
@@ -407,25 +455,52 @@ const NewClient = () => {
 
 
 
-            case "email":
-                if (!formData.email) {
-                    tempErrors.email = "The email field must have a value.";
-                } else if (!validateEmail(formData.email)) {
-                    tempErrors.email = "The email must be a valid email address.";
+
+            //Fourth Step
+
+            case "prodEndPoint":
+                if (!formData.prodEndPoint) {
+                    tempErrors.prodEndPoint = "The End Point field must have a value.";
+                } else if (!(formData.prodEndPoint.startsWith("https://") || formData.prodEndPoint.startsWith("http://"))) {
+                    tempErrors.prodEndPoint = "The End Point must start with one of the following: http:// or https://.";
                 } else {
-                    tempErrors.email = "";
+                    tempErrors.prodEndPoint = "";
                 }
                 break;
 
-            case "password":
-                tempErrors.password = formData.password ? "" : "Password is required.";
+            case "prodLobbyUrl":
+                if (formData.prodLobbyUrl.length >= 200) {
+                    tempErrors.prodLobbyUrl = "The Lobby Url must be less than 200 characters.";
+                } else {
+                    tempErrors.prodLobbyUrl = "";
+                }
                 break;
-            case "confirmPassword":
-                tempErrors.confirmPassword = formData.password !== formData.confirmPassword ? "Passwords do not match." : "";
+
+
+
+            case "prodLoginCredentials":
+                const prodLoginCredentialsErrors = formData.prodLoginCredentials.map((cred) =>
+                    (cred.accountName && !cred.password) || (!cred.accountName && cred.password)
+                        ? "The Login Credentials field is required when Login Credentials is present."
+                        : ""
+                );
+                tempErrors.prodLoginCredentials = prodLoginCredentialsErrors.filter(error => error !== "");
+
+                if (checkForDuplicateCredentials(formData.prodLoginCredentials)) {
+                    tempErrors.prodLoginCredentials = tempErrors.prodLoginCredentials || [];
+                    tempErrors.prodLoginCredentials.push("Duplicate login credentials are not allowed.");
+                }
                 break;
-            case "names":
-                tempErrors.names = formData.names.some(name => !name) ? "Please enter at least one name." : "";
+
+
+
+            case "prodIpAddress":
+                const prodIpAddressErrors = formData.prodIpAddress.map((ip) =>
+                    !ip ? "The IP field must have a value." : !ipv4Regex.test(ip) ? (`The IP ["${ip}"] must be a valid IPv4 address.`) : ""
+                );
+                tempErrors.prodIpAddress = prodIpAddressErrors;
                 break;
+
             default:
                 break;
         }
@@ -488,6 +563,17 @@ const NewClient = () => {
         const isValid = validateStep();
         if (isValid) {
             setCurrentStep((prev) => Math.min(prev + 1, 5)); // Ensure we don't go beyond 5
+        }
+    };
+
+
+    const handleSubmit = async () => {
+        try {
+            const response = await axios.post('http://localhost:3001/send-email', formData);
+            alert('Email sent successfully');
+        } catch (error) {
+            console.error('Error sending email:', error);
+            alert('Error sending email');
         }
     };
 
@@ -580,7 +666,7 @@ const NewClient = () => {
                                         <button
                                             type="button"
                                             className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-sm text-white bg-[#CC5F5A] hover:bg-[#c77874] focus:outline-none"
-                                            onClick={nextStep}
+                                            onClick={handleSubmit}
                                         >
                                             Submit
                                         </button>

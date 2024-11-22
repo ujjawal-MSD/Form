@@ -85,7 +85,7 @@ const StepThree = ({ formData, setFormData, errors, handleBlur }) => {
             onBlur={(index) => handleBlur("ipAddress")}
             errors={errors.ipAddress}
           />
-          <p className="text-sm text-[#b19c92] mt-1">Up to 20, currently: {formData.ipAddress.length}</p>
+          <p className="text-sm text-[#b19c92] mt-1">Up to 20, currently:</p>
           {errors.ipAddress && <p className="text-red-600 text-sm">{errors.ipAddress}</p>}
         </div>
 
