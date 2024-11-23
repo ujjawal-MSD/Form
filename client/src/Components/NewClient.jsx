@@ -1,65 +1,70 @@
 import React, { useState } from "react";
 import { IoCheckmarkSharp } from "react-icons/io5";
-import StepOne from "../StepOne";
-import StepTwo from "../StepTwo";
-import StepThree from "../StepThree";
-import StepFour from "../StepFour";
-import FinalStep from "../FinalStep";
+import StepOne from "./Steppers/StepOne";
+import StepTwo from "./Steppers/StepTwo";
+import StepThree from "./Steppers/StepThree";
+import StepFour from "./Steppers/StepFour";
+import FinalStep from "./Steppers/FinalStep";
+import { TailSpin } from 'react-loader-spinner';
+import { toast, Toaster } from 'react-hot-toast';
 import axios from 'axios';
 
-// Validation Functions
+// Validation Function
 const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
 };
 
+// Duplicate Field Check Function
 const checkForDuplicates = (arr) => {
     return arr.filter((item, index) => arr.indexOf(item) !== index);
 };
 
-const checkForDuplicateCredentials = (credentials) => {
-    const seen = new Set();
-    const duplicates = new Set();
-    credentials.forEach(cred => {
-        const key = `${cred.accountName}-${cred.password}`;
-        if (seen.has(key)) {
-            duplicates.add(key);
-        } else {
-            seen.add(key);
-        }
-    });
-    return duplicates.size > 0;
+// Custom function to generate request ID in the format 241114-0005
+const generateRequestId = () => {
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    const randomNum = ('0000' + Math.floor(Math.random() * 10000)).slice(-4);
+    return `${year}${month}${day}-${randomNum}`;
 };
+
+
+const whatsappNoRegex = /^\+?[0-9]{1,3}?[0-9]{10,15}$/;
 
 const NewClient = () => {
     const [currentStep, setCurrentStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
-        emails: [""],
-        walletType: "",
-        skypeGroup: [""],
-        brandName: [""],
-        technicalSupport: [""],
-        technicalSupportEmail: [""],
-        groupName: "",
+        requestId: generateRequestId(),
 
-
+        //First Step
         companyName: "",
-        selectedCountries: [], // Add this line
-        otherCountry: "",
-        adminEmail: [""],
-
-        endPoint: "",
-        lobbyUrl: "",
-        loginCredentials: [{ accountName: "", password: "" }],
-        ipAddress: [""],
-
-
-        prodEndPoint: "",
-        prodLobbyUrl: "",
-        prodLoginCredentials: [{ accountName: "", password: "" }],
-        prodIpAddress: [""],
-
+        companyUrl: "",
+        hostingLocation: "",
+        walletType: "Seamless/Single Wallet",
         provider: [],
+
+        //Second Step
+        clientEmail: [""],
+        managerSkypeId: [""],
+        financeSkypeId: [""],
+        whatsappNo: [""],
+        telegramId: [""],
+
+        //Third Step
+        backOfficeIpAddress: "",
+        APIIpAddress: "",
+        stagingEndpointURL: "",
+
+        //Fouth Step
+        prodBackOfficeIpAddress: "",
+        prodApiIpAddress: "",
+        prodEndpointURL: "",
+
+        // Current Date and Time
+        submissionDateTime: new Date().toISOString(),
     });
 
     const [errors, setErrors] = useState({});
@@ -69,7 +74,6 @@ const NewClient = () => {
         setSelectedLanguage(event.target.value);
     };
 
-    const invalidNames = /^(?!.*(?:group|brand|demo|test|staging|production))^[a-zA-Z0-9]+$/i;
 
     const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$/;
 
@@ -78,211 +82,122 @@ const NewClient = () => {
         let tempErrors = {};
 
         if (currentStep === 1) {
-            if (formData.walletType === "") {
-                tempErrors.walletType = "The Wallet Type field must have a value.";
-            }
 
-            if (formData.emails.some(email => !email.trim())) {
-                tempErrors.emails = "The email field must have a value.";
-            } else {
-                formData.emails.forEach((email, index) => {
-                    if (email && !validateEmail(email)) {
-                        tempErrors.emails = tempErrors.emails || [];
-                        tempErrors.emails[index] = "The email must be a valid email address.";
-                    }
-                });
-            }
-            const duplicateEmails = checkForDuplicates(formData.emails);
-            if (duplicateEmails.length > 0) {
-                tempErrors.emails = "The email field has a duplicate value.";
-            }
-
-            if (formData.skypeGroup.some(skypeGroup => !skypeGroup.trim())) {
-                tempErrors.skypeGroup = "The Skype Group Name field must have a value.";
-            }
-            const duplicateSkypeGroup = checkForDuplicates(formData.skypeGroup);
-            if (duplicateSkypeGroup.length > 0) {
-                tempErrors.skypeGroup = "The Skype Group field has a duplicate value.";
-            }
-
-            if (formData.brandName.some(brandName => !brandName.trim())) {
-                tempErrors.brandName = "The Brand Name field must have a value.";
-            } else if (formData.brandName.some(brandName => invalidNames.test(brandName))) {
-                tempErrors.brandName = "The Brand Name is not valid.";
-            }
-            const duplicateBrandName = checkForDuplicates(formData.brandName);
-            if (duplicateBrandName.length > 0) {
-                tempErrors.brandName = "The Brand Name field has a duplicate value.";
-            }
-
-            if (formData.technicalSupport.some(technicalSupport => !technicalSupport.trim())) {
-                tempErrors.technicalSupport = "The Technical Support Personnel field must have a value.";
-            }
-            const duplicateTechnicalSupport = checkForDuplicates(formData.technicalSupport);
-            if (duplicateTechnicalSupport.length > 0) {
-                tempErrors.technicalSupport = "The Technical Support Personnel field has a duplicate value.";
-            }
-
-            if (!formData.groupName) {
-                tempErrors.groupName = "The Group Name field must have a value.";
-            } else if (invalidNames.test(formData.groupName)) {
-                tempErrors.groupName = "Please enter a valid Group Name.";
-            }
-
-            if (formData.technicalSupportEmail.some(technicalSupportEmail => !technicalSupportEmail.trim())) {
-                tempErrors.technicalSupportEmail = "The Technical Support Personnel Email field must have a value.";
-            } else formData.technicalSupportEmail.forEach((email, index) => {
-                if (email && !validateEmail(email)) {
-                    tempErrors.technicalSupportEmail = tempErrors.technicalSupportEmail || [];
-                    tempErrors.technicalSupportEmail[index] = "The email must be a valid email address.";
-                }
-            });
-            const duplicateTechnicalSupportEmail = checkForDuplicates(formData.technicalSupportEmail);
-            if (duplicateTechnicalSupportEmail.length > 0) {
-                tempErrors.technicalSupportEmail = "The Technical Support Personnel Email field has a duplicate value.";
-            }
-
-
-
-
-            if (formData.provider.length === 0) {
-                tempErrors.provider = "The Provider field is required.";
-            } else {
-                for (const provider of formData.provider) {
-                    if (["hacksaw", "nolimit city"].some(name => provider.id.toLowerCase().includes(name)) && !provider.rtp) {
-                        tempErrors.provider = 'The RTP field is required.';
-                        break;
-                    }
-                }
-            }
-
-
-        }
-
-
-
-
-        if (currentStep === 2) {
-
+            // Company Name
             if (!formData.companyName) {
                 tempErrors.companyName = "The Company Name field must have a value.";
             }
 
-            if (formData.adminEmail.some(email => !email.trim())) {
-                tempErrors.adminEmail = "The BO Admin Email field must have a value.";
+            // Company URL
+            if (!formData.companyUrl) {
+                tempErrors.companyUrl = "The Company URL field must have a value.";
+            }
+
+            // Hosting Location
+            if (formData.hostingLocation === "") {
+                tempErrors.hostingLocation = "The Hosting Location field must have a value.";
+            }
+
+
+            // Provider 
+            if (formData.provider.length === 0) {
+                tempErrors.provider = "The Provider field is required.";
+            }
+        }
+
+        if (currentStep === 2) {
+
+            if (formData.clientEmail.some(email => !email.trim())) {
+                tempErrors.clientEmail = "The Email Id field must have a value.";
             } else {
-                formData.adminEmail.forEach((email, index) => {
+                formData.clientEmail.forEach((email, index) => {
                     if (email && !validateEmail(email)) {
-                        tempErrors.adminEmail = tempErrors.adminEmail || [];
-                        tempErrors.adminEmail[index] = "The BO Admin Email must be a valid email address.";
+                        tempErrors.clientEmail = tempErrors.clientEmail || [];
+                        tempErrors.clientEmail[index] = "The Email must be a valid email address.";
                     }
                 });
             }
-            const duplicateAdminEmail = checkForDuplicates(formData.adminEmail);
-            if (duplicateAdminEmail.length > 0) {
-                tempErrors.adminEmail = "The BO Admin Email field has a duplicate value.";
+            const duplicateClientEmail = checkForDuplicates(formData.clientEmail);
+            if (duplicateClientEmail.length > 0) {
+                tempErrors.clientEmail = "The Email Id field has a duplicate value.";
             }
 
-            if (formData.selectedCountries.length === 0) {
-                tempErrors.selectedCountries = "The Main Operations Market field must have a value.";
-            } else if (formData.selectedCountries.includes("Other") && !formData.otherCountry.trim()) {
-                tempErrors.selectedCountries = "If Other is checked, please provide additional information.";
+
+            if (formData.managerSkypeId.some(skypeId => !skypeId.trim())) {
+                tempErrors.managerSkypeId = "The Manager Skype User Id field must have a value.";
+            }
+            const duplicatemanagerSkypeId = checkForDuplicates(formData.managerSkypeId);
+            if (duplicatemanagerSkypeId.length > 0) {
+                tempErrors.managerSkypeId = "The Email Id field has a duplicate value.";
             }
 
+
+
+            if (formData.financeSkypeId.some(skypeId => !skypeId.trim())) {
+                tempErrors.financeSkypeId = "The Finance Skype User ID field must have a value.";
+            }
+            const duplicateFinanceSkypeId = checkForDuplicates(formData.financeSkypeId);
+            if (duplicateFinanceSkypeId.length > 0) {
+                tempErrors.financeSkypeId = "The Email Id field has a duplicate value.";
+            }
+
+
+            if (formData.whatsappNo.some(whatsapp => !whatsapp.trim() || !whatsappNoRegex.test(whatsapp))) {
+                tempErrors.whatsappNo = "The Whatsapp No. field must have a valid value.";
+            }
+            const duplicateWhatsappNo = checkForDuplicates(formData.whatsappNo);
+            if (duplicateWhatsappNo.length > 0) {
+                tempErrors.whatsappNo = "The Whatsapp No. field has a duplicate value.";
+            }
+
+            if (formData.telegramId.some(telegram => !telegram.trim())) {
+                tempErrors.telegramId = "The Telegram Id field must have a value.";
+            }
+            const duplicateTelegramId = checkForDuplicates(formData.telegramId);
+            if (duplicateTelegramId.length > 0) {
+                tempErrors.telegramId = "The Telegram Id field has a duplicate value.";
+            }
 
         }
 
+
+
         if (currentStep === 3) {
 
-            if (!formData.endPoint) {
-                tempErrors.endPoint = "The End Point field must have a value.";
-            } else if (!(formData.endPoint.startsWith("https://") || formData.endPoint.startsWith("http://"))) {
-                tempErrors.endPoint = "The End Point must start with one of the following: http:// or https://.";
+            if (!formData.backOfficeIpAddress) {
+                tempErrors.backOfficeIpAddress = "The Back Office IP Address field must have a value.";
+            } else if (!ipv4Regex.test(formData.backOfficeIpAddress)) {
+                tempErrors.backOfficeIpAddress = "The Back Office IP Address must be a valid IPv4 address.";
             }
 
-
-            if (formData.lobbyUrl.length >= 200) {
-                tempErrors.lobbyUrl = "The Lobby Url must be less than 200 characters.";
+            if (!formData.APIIpAddress) {
+                tempErrors.APIIpAddress = "The API IP Address field must have a value.";
+            } else if (!ipv4Regex.test(formData.APIIpAddress)) {
+                tempErrors.APIIpAddress = "The API IP Address must be a valid IPv4 address.";
             }
 
-
-            if (formData.loginCredentials.some(cred => (cred.accountName && !cred.password) || (!cred.accountName && cred.password))) {
-                // Check for missing fields in login credentials
-                tempErrors.loginCredentials = formData.loginCredentials.map((cred, index) => {
-                    if ((cred.accountName && !cred.password) || (!cred.accountName && cred.password)) {
-                        return `Login credentials at index ${index} are incomplete.`;
-                    }
-                    return null; // No error for this credential
-                }).filter(error => error !== null); // Remove null entries
-            }
-
-            if (checkForDuplicateCredentials(formData.loginCredentials)) {
-                tempErrors.loginCredentials = tempErrors.loginCredentials || [];
-                tempErrors.loginCredentials.push("Duplicate login credentials are not allowed.");
-            }
-
-
-
-
-
-
-            if (formData.ipAddress.some(ip => !ip.trim())) {
-                tempErrors.ipAddress = "The IP field must have a value.";
-            } else {
-                formData.ipAddress.forEach((ip, index) => {
-                    if (ip && !ipv4Regex.test(ip)) {
-                        tempErrors.ipAddress = tempErrors.ipAddress || [];
-                        tempErrors.ipAddress[index] = (`The IP ["${ip}"] must be a valid IPv4 address.`)
-                    }
-                });
+            if (!formData.stagingEndpointURL) {
+                tempErrors.stagingEndpointURL = "The Staging Endpoint URL field must have a value.";
             }
 
         }
 
         if (currentStep === 4) {
-            if (!formData.prodEndPoint) {
-                tempErrors.prodEndPoint = "The End Point field must have a value.";
-            } else if (!(formData.prodEndPoint.startsWith("https://") || formData.prodEndPoint.startsWith("http://"))) {
-                tempErrors.prodEndPoint = "The End Point must start with one of the following: http:// or https://.";
+            if (!formData.prodBackOfficeIpAddress) {
+                tempErrors.prodBackOfficeIpAddress = "The Back Office IP Address field must have a value.";
+            } else if (!ipv4Regex.test(formData.prodBackOfficeIpAddress)) {
+                tempErrors.prodBackOfficeIpAddress = "The Back Office IP Address must be a valid IPv4 address.";
             }
 
-
-            if (formData.prodLobbyUrl.length >= 200) {
-                tempErrors.prodLobbyUrl = "The Lobby Url must be less than 200 characters.";
+            if (!formData.prodApiIpAddress) {
+                tempErrors.prodApiIpAddress = "The API IP Address field must have a value.";
+            } else if (!ipv4Regex.test(formData.prodApiIpAddress)) {
+                tempErrors.prodApiIpAddress = "The API IP Address must be a valid IPv4 address.";
             }
 
-
-            if (formData.prodLoginCredentials.some(cred => (cred.accountName && !cred.password) || (!cred.accountName && cred.password))) {
-                // Check for missing fields in login credentials
-                tempErrors.prodLoginCredentials = formData.prodLoginCredentials.map((cred, index) => {
-                    if ((cred.accountName && !cred.password) || (!cred.accountName && cred.password)) {
-                        return `Login credentials at index ${index} are incomplete.`;
-                    }
-                    return null; // No error for this credential
-                }).filter(error => error !== null); // Remove null entries
+            if (!formData.prodEndpointURL) {
+                tempErrors.prodEndpointURL = "The Production Endpoint URL field must have a value.";
             }
-
-            if (checkForDuplicateCredentials(formData.prodLoginCredentials)) {
-                tempErrors.prodLoginCredentials = tempErrors.prodLoginCredentials || [];
-                tempErrors.prodLoginCredentials.push("Duplicate login credentials are not allowed.");
-            }
-
-
-
-
-
-
-            if (formData.prodIpAddress.some(ip => !ip.trim())) {
-                tempErrors.prodIpAddress = "The IP field must have a value.";
-            } else {
-                formData.prodIpAddress.forEach((ip, index) => {
-                    if (ip && !ipv4Regex.test(ip)) {
-                        tempErrors.prodIpAddress = tempErrors.prodIpAddress || [];
-                        tempErrors.prodIpAddress[index] = (`The IP ["${ip}"] must be a valid IPv4 address.`)
-                    }
-                });
-            }
-
         }
 
         setErrors(tempErrors);
@@ -296,86 +211,7 @@ const NewClient = () => {
         switch (field) {
 
             // Step One 
-            case "emails":
-                const emailErrors = formData.emails.map((email) =>
-                    !email ? "The email field must have a value." : !validateEmail(email) ? "The email must be a valid email address." : ""
-                );
-                tempErrors.emails = emailErrors;
-                break;
 
-            case "walletType":
-                if (!formData.walletType) {
-                    tempErrors.walletType = "The Wallet Type field must have a value.";
-                } else {
-                    tempErrors.walletType = "";
-                }
-                break;
-
-
-            case "skypeGroup":
-                if (formData.skypeGroup.some(group => !group.trim())) {
-                    tempErrors.skypeGroup = "The Skype Group Name field must have a value.";
-                } else {
-                    tempErrors.skypeGroup = "";
-                }
-                break;
-
-            case "groupName":
-                if (!formData.groupName) {
-                    tempErrors.groupName = "The Group Name field must have a value.";
-                } else if (invalidNames.test(formData.groupName)) {
-                    tempErrors.groupName = "The Group Name is not valid.";
-                } else {
-                    tempErrors.groupName = "";
-                }
-                break;
-
-            case "brandName":
-                if (formData.brandName.some(group => !group.trim())) {
-                    tempErrors.brandName = "The Brand Name field must have a value.";
-                } else if (formData.brandName.some(brandName => invalidNames.test(brandName))) {
-                    tempErrors.brandName = "The Brand Name is not valid.";
-                } else {
-                    tempErrors.brandName = "";
-                }
-                break;
-            case "technicalSupport":
-                if (formData.technicalSupport.some(group => !group.trim())) {
-                    tempErrors.technicalSupport = "The Technical Support Personnel field must have a value.";
-                } else {
-                    tempErrors.technicalSupport = "";
-                }
-                break;
-            case "technicalSupportEmail":
-                const technicalSupportEmailErrors = formData.technicalSupportEmail.map((email) =>
-                    !email ? "The Technical Support Personnel Email field must have a value." : !validateEmail(email) ? "The Technical Support Personnel Email must be a valid email address." : ""
-                );
-                tempErrors.technicalSupportEmail = technicalSupportEmailErrors;
-                break;
-
-
-            case "provider":
-                if (formData.provider.length === 0) {
-                    tempErrors.provider = "The Provider field is required.";
-                } else {
-                    let providerError = "";
-                    for (const provider of formData.provider) {
-                        if (["hacksaw", "nolimit city"].some(name => provider.id.toLowerCase().includes(name)) && !provider.rtp) {
-                            providerError = 'The RTP field is required.';
-                            break;
-                        }
-                    }
-                    tempErrors.provider = providerError;
-                }
-                break;
-
-
-
-
-
-
-
-            // Second Step
             case "companyName":
                 if (!formData.companyName) {
                     tempErrors.companyName = "The Company Name field must have a value.";
@@ -385,173 +221,174 @@ const NewClient = () => {
                 break;
 
 
-            case "selectedCountries":
-                if (formData.selectedCountries.length === 0) {
-                    tempErrors.selectedCountries = "The Main Operations Market field must have a value.";
-                } else if (formData.selectedCountries.includes("Other") && !formData.otherCountry.trim()) {
-                    tempErrors.selectedCountries = "If Other is checked, please provide additional information.";
+            case "companyUrl":
+                if (!formData.companyUrl) {
+                    tempErrors.companyUrl = "The Company URL field must have a value.";
                 } else {
-                    tempErrors.selectedCountries = "";
+                    tempErrors.companyUrl = "";
                 }
                 break;
 
 
-            case "adminEmail":
-                const adminEmailErrors = formData.adminEmail.map((email) =>
-                    !email ? "The email field must have a value." : !validateEmail(email) ? "The BO Admin Email must be a valid email address." : ""
-                );
-                tempErrors.adminEmail = adminEmailErrors;
-                break;
-
-
-
-
-
-
-            // Step Three 
-
-            case "endPoint":
-                if (!formData.endPoint) {
-                    tempErrors.endPoint = "The End Point field must have a value.";
-                } else if (!(formData.endPoint.startsWith("https://") || formData.endPoint.startsWith("http://"))) {
-                    tempErrors.endPoint = "The End Point must start with one of the following: http:// or https://.";
+            case "hostingLocation":
+                if (!formData.hostingLocation) {
+                    tempErrors.hostingLocation = "The Hosting Location field must have a value.";
                 } else {
-                    tempErrors.endPoint = "";
+                    tempErrors.hostingLocation = "";
                 }
                 break;
 
-            case "lobbyUrl":
-                if (formData.lobbyUrl.length >= 200) {
-                    tempErrors.lobbyUrl = "The Lobby Url must be less than 200 characters.";
+
+            case "provider":
+                if (formData.provider.length === 0) {
+                    tempErrors.provider = "The Provider field is required.";
                 } else {
-                    tempErrors.lobbyUrl = "";
+                    tempErrors.provider = "";
                 }
                 break;
 
 
+            // Second Step
 
-            case "loginCredentials":
-                const loginCredentialsErrors = formData.loginCredentials.map((cred) =>
-                    (cred.accountName && !cred.password) || (!cred.accountName && cred.password)
-                        ? "The Login Credentials field is required when Login Credentials is present."
-                        : ""
+            case "clientEmail":
+                const clientEmailErrors = formData.clientEmail.map((email) =>
+                    !email ? "The Email Id field must have a value." : !validateEmail(email) ? "The Email must be a valid email." : ""
                 );
-                tempErrors.loginCredentials = loginCredentialsErrors.filter(error => error !== "");
+                tempErrors.clientEmail = clientEmailErrors;
+                break;
 
-                if (checkForDuplicateCredentials(formData.loginCredentials)) {
-                    tempErrors.loginCredentials = tempErrors.loginCredentials || [];
-                    tempErrors.loginCredentials.push("Duplicate login credentials are not allowed.");
-                }
+            case "managerSkypeId":
+                const managerSkypeIdErrors = formData.managerSkypeId.map((skypeId) =>
+                    !skypeId ? "The Manager Skype User Id field must have a value." : ""
+                );
+                tempErrors.managerSkypeId = managerSkypeIdErrors;
+                break;
+
+            case "financeSkypeId":
+                const financeSkypeIdErrors = formData.financeSkypeId.map((skypeId) =>
+                    !skypeId ? "The Finance Skype User ID field must have a value." : ""
+                );
+                tempErrors.financeSkypeId = financeSkypeIdErrors;
+                break;
+
+            case "whatsappNo":
+                const whatsappNoErrors = formData.whatsappNo.map((whatsapp) =>
+                    !whatsapp ? "The Whatsapp No. field must have a value." : !whatsappNoRegex.test(whatsapp) ? "The Whatsapp No. must be valid ." : ""
+                );
+                tempErrors.whatsappNo = whatsappNoErrors;
                 break;
 
 
-
-            case "ipAddress":
-                const ipAddressErrors = formData.ipAddress.map((ip) =>
-                    !ip ? "The IP field must have a value." : !ipv4Regex.test(ip) ? (`The IP ["${ip}"] must be a valid IPv4 address.`) : ""
+            case "telegramId":
+                const telegramIdErrors = formData.telegramId.map((telegram) =>
+                    !telegram ? "The Telegram Id field must have a value." : ""
                 );
-                tempErrors.ipAddress = ipAddressErrors;
+                tempErrors.telegramId = telegramIdErrors;
                 break;
 
 
+            // Step Three
 
-
-            //Fourth Step
-
-            case "prodEndPoint":
-                if (!formData.prodEndPoint) {
-                    tempErrors.prodEndPoint = "The End Point field must have a value.";
-                } else if (!(formData.prodEndPoint.startsWith("https://") || formData.prodEndPoint.startsWith("http://"))) {
-                    tempErrors.prodEndPoint = "The End Point must start with one of the following: http:// or https://.";
+            case "backOfficeIpAddress":
+                if (!formData.backOfficeIpAddress) {
+                    tempErrors.backOfficeIpAddress = "The Back Office IP Address field must have a value.";
+                } else if (!ipv4Regex.test(formData.backOfficeIpAddress)) {
+                    tempErrors.backOfficeIpAddress = "The Back Office IP Address must be a valid IPv4 address.";
                 } else {
-                    tempErrors.prodEndPoint = "";
+                    tempErrors.backOfficeIpAddress = "";
                 }
                 break;
 
-            case "prodLobbyUrl":
-                if (formData.prodLobbyUrl.length >= 200) {
-                    tempErrors.prodLobbyUrl = "The Lobby Url must be less than 200 characters.";
+            case "APIIpAddress":
+                if (!formData.APIIpAddress) {
+                    tempErrors.APIIpAddress = "The API IP Address field must have a value.";
+                } else if (!ipv4Regex.test(formData.APIIpAddress)) {
+                    tempErrors.APIIpAddress = "The API IP Address must be a valid IPv4 address.";
                 } else {
-                    tempErrors.prodLobbyUrl = "";
+                    tempErrors.APIIpAddress = "";
+                }
+                break;
+
+
+            case "stagingEndpointURL":
+                if (!formData.stagingEndpointURL) {
+                    tempErrors.stagingEndpointURL = "The Staging Endpoint URL field must have a value.";
+                } else {
+                    tempErrors.stagingEndpointURL = "";
                 }
                 break;
 
 
 
-            case "prodLoginCredentials":
-                const prodLoginCredentialsErrors = formData.prodLoginCredentials.map((cred) =>
-                    (cred.accountName && !cred.password) || (!cred.accountName && cred.password)
-                        ? "The Login Credentials field is required when Login Credentials is present."
-                        : ""
-                );
-                tempErrors.prodLoginCredentials = prodLoginCredentialsErrors.filter(error => error !== "");
 
-                if (checkForDuplicateCredentials(formData.prodLoginCredentials)) {
-                    tempErrors.prodLoginCredentials = tempErrors.prodLoginCredentials || [];
-                    tempErrors.prodLoginCredentials.push("Duplicate login credentials are not allowed.");
+            // Step Fourth
+
+            case "prodBackOfficeIpAddress":
+                if (!formData.prodBackOfficeIpAddress) {
+                    tempErrors.prodBackOfficeIpAddress = "The Back Office IP Address field must have a value.";
+                } else if (!ipv4Regex.test(formData.prodBackOfficeIpAddress)) {
+                    tempErrors.prodBackOfficeIpAddress = "The Back Office IP Address must be a valid IPv4 address.";
+                } else {
+                    tempErrors.prodBackOfficeIpAddress = "";
+                }
+                break;
+
+            case "prodApiIpAddress":
+                if (!formData.prodApiIpAddress) {
+                    tempErrors.prodApiIpAddress = "The API IP Address field must have a value.";
+                } else if (!ipv4Regex.test(formData.prodApiIpAddress)) {
+                    tempErrors.prodApiIpAddress = "The API IP Address must be a valid IPv4 address.";
+                } else {
+                    tempErrors.prodApiIpAddress = "";
                 }
                 break;
 
 
-
-            case "prodIpAddress":
-                const prodIpAddressErrors = formData.prodIpAddress.map((ip) =>
-                    !ip ? "The IP field must have a value." : !ipv4Regex.test(ip) ? (`The IP ["${ip}"] must be a valid IPv4 address.`) : ""
-                );
-                tempErrors.prodIpAddress = prodIpAddressErrors;
+            case "prodEndpointURL":
+                if (!formData.prodEndpointURL) {
+                    tempErrors.prodEndpointURL = "The Production Endpoint URL field must have a value.";
+                } else {
+                    tempErrors.prodEndpointURL = "";
+                }
                 break;
 
             default:
                 break;
         }
 
-        if (field === 'emails') {
-            const duplicateEmails = checkForDuplicates(formData.emails);
-            if (duplicateEmails.length > 0) {
-                tempErrors.emails = "The email field has a duplicate value.";
+
+        if (field === 'clientEmail') {
+            const duplicateClientEmail = checkForDuplicates(formData.clientEmail);
+            if (duplicateClientEmail.length > 0) {
+                tempErrors.clientEmail = "The Email Id field has a duplicate value.";
             }
         }
 
-        if (field === 'skypeGroup') {
-            const duplicateSkypeGroup = checkForDuplicates(formData.skypeGroup);
-            if (duplicateSkypeGroup.length > 0) {
-                tempErrors.skypeGroup = "The Skype Group field has a duplicate value.";
+        if (field === 'managerSkypeId') {
+            const duplicatemanagerSkypeId = checkForDuplicates(formData.managerSkypeId);
+            if (duplicatemanagerSkypeId.length > 0) {
+                tempErrors.managerSkypeId = "The Manager Skype User Id field has a duplicate value.";
             }
         }
 
-        if (field === 'brandName') {
-            const duplicateBrandName = checkForDuplicates(formData.brandName);
-            if (duplicateBrandName.length > 0) {
-                tempErrors.brandName = "The Brand Name field has a duplicate value.";
+        if (field === 'financeSkypeId') {
+            const duplicateFinanceSkypeId = checkForDuplicates(formData.financeSkypeId);
+            if (duplicateFinanceSkypeId.length > 0) {
+                tempErrors.financeSkypeId = "The Finance Skype User ID field has a duplicate value.";
             }
         }
 
-        if (field === 'technicalSupport') {
-            const duplicateTechnicalSupport = checkForDuplicates(formData.technicalSupport);
-            if (duplicateTechnicalSupport.length > 0) {
-                tempErrors.technicalSupport = "The Technical Support Personnel field has a duplicate value.";
+        if (field === 'whatsappNo') {
+            const duplicateWhatsappNo = checkForDuplicates(formData.whatsappNo);
+            if (duplicateWhatsappNo.length > 0) {
+                tempErrors.whatsappNo = "The Whatsapp No. field has a duplicate value.";
             }
         }
 
-        if (field === 'technicalSupportEmail') {
-            const duplicateTechnicalSupportEmail = checkForDuplicates(formData.technicalSupportEmail);
-            if (duplicateTechnicalSupportEmail.length > 0) {
-                tempErrors.technicalSupportEmail = "The Technical Support Personnel Email field has a duplicate value.";
-            }
-        }
-
-
-        if (field === 'adminEmail') {
-            const duplicateAdminEmail = checkForDuplicates(formData.adminEmail);
-            if (duplicateAdminEmail.length > 0) {
-                tempErrors.adminEmail = "The BO Admin email field has a duplicate value.";
-            }
-        }
-
-        if (field === 'ipAddress') {
-            const duplicateIpAddress = checkForDuplicates(formData.ipAddress);
-            if (duplicateIpAddress.length > 0) {
-                tempErrors.ipAddress = "The IP field has a duplicate value.";
+        if (field === 'telegramId') {
+            const duplicateTelegramId = checkForDuplicates(formData.telegramId);
+            if (duplicateTelegramId.length > 0) {
+                tempErrors.telegramId = "The Telegram Id field has a duplicate value.";
             }
         }
 
@@ -563,17 +400,22 @@ const NewClient = () => {
         const isValid = validateStep();
         if (isValid) {
             setCurrentStep((prev) => Math.min(prev + 1, 5)); // Ensure we don't go beyond 5
+        } else {
+            toast.error('Form validation failed'); // Show error toast
         }
     };
 
 
     const handleSubmit = async () => {
+        setIsLoading(true); // Set loading to true
         try {
-            const response = await axios.post('http://localhost:3001/send-email', formData);
-            alert('Email sent successfully');
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, formData);
+            toast.success('Form Submitted Successfully!'); // Show success toast
+            nextStep();
         } catch (error) {
-            console.error('Error sending email:', error);
-            alert('Error sending email');
+            toast.error('Error Form Submittion');
+        } finally {
+            setIsLoading(false); // Set loading to false
         }
     };
 
@@ -583,6 +425,7 @@ const NewClient = () => {
 
     return (
         <div className="w-full md:grid md:grid-cols-12 gap-3 bg-[#fafafa]">
+            <Toaster />
             <div className="md:col-span-10 md:ml-[calc(20%+2.4px)]">
                 <div className="relative block overflow-hidden p-3">
                     <div className="m-3 overflow-auto h-full" style={{ boxShadow: "0 1.6px 3.6px rgba(0,0,0,0.132), 0 0.3px 0.9px rgba(0,0,0,0.108)" }}>
@@ -590,7 +433,7 @@ const NewClient = () => {
                         <header className="flex bg-[#908d89] h-[50px] justify-between items-center">
                             <div className="flex text-sm md:flex-row">
                                 <div className="cursor-pointer py-[0.6rem] md:py-[14px] px-4 md:px-[29px] border-t-2 md:border-t-[3px] bg-white border-black text-[#282f3a]">
-                                    New Client
+                                    Account Details
                                 </div>
                             </div>
                             <div className="hidden md:block items-center">
@@ -603,12 +446,13 @@ const NewClient = () => {
                         </header>
 
                         {/* Content Area */}
-                        <div className="px-6 pb-5 bg-white">
+                        <div className="px-6 pb-5 bg-white relative">
+
                             {/* Stepper Navigation */}
                             <ul className="relative flex flex-row gap-x-2 p-3 w-full overflow-hidden">
                                 {[
-                                    { label: 'Agent Information', count: 1 },
-                                    { label: 'Company Information', count: 2 },
+                                    { label: 'Information', count: 1 },
+                                    { label: 'Contact Details', count: 2 },
                                     { label: 'Staging Information', count: 3 },
                                     { label: 'Prod Information', count: 4 },
                                     { label: 'Finish', count: 5 }
@@ -634,45 +478,53 @@ const NewClient = () => {
                             </ul>
 
                             {/* Stepper Content */}
-                            <div>
-                                {currentStep === 1 && <StepOne formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
-                                {currentStep === 2 && <StepTwo formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
-                                {currentStep === 3 && <StepThree formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
-                                {currentStep === 4 && <StepFour formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
-                                {currentStep === 5 && <FinalStep formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} />}
-
-                                {/* Navigation Buttons */}
-                                <div className="mt-5 flex justify-center items-center gap-x-2">
-                                    {currentStep > 1 && currentStep !== 5 && (
-                                        <button
-                                            type="button"
-                                            className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-[4px] border border-gray-200 bg-[#A7837A] text-white shadow-sm hover:bg-[#ababab] hover:border-blue-500"
-                                            onClick={goBack}
-                                            disabled={currentStep === 1}
-                                        >
-                                            Preview Step
-                                        </button>
-                                    )}
-                                    {currentStep < 4 && (
-                                        <button
-                                            type="button"
-                                            className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-sm text-white border border-green-600 bg-[#282F3A] hover:bg-[#347DA3FF] focus:outline-none"
-                                            onClick={nextStep}
-                                        >
-                                            Next Step
-                                        </button>
-                                    )}
-                                    {currentStep === 4 && (
-                                        <button
-                                            type="button"
-                                            className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-sm text-white bg-[#CC5F5A] hover:bg-[#c77874] focus:outline-none"
-                                            onClick={handleSubmit}
-                                        >
-                                            Submit
-                                        </button>
-                                    )}
+                            {isLoading && (
+                                <div className="absolute inset-0 bg-white bg-opacity-70 flex justify-center items-center">
+                                    <TailSpin color="#16a34a" height={50} width={50} />
                                 </div>
-                            </div>
+                            )}
+
+                            <>
+                                <div>
+                                    {currentStep === 1 && <StepOne formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
+                                    {currentStep === 2 && <StepTwo formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
+                                    {currentStep === 3 && <StepThree formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
+                                    {currentStep === 4 && <StepFour formData={formData} setFormData={setFormData} errors={errors} setErrors={setErrors} handleBlur={handleBlur} />}
+                                    {currentStep === 5 && <FinalStep requestId={formData.requestId} />}
+
+                                    {/* Navigation Buttons */}
+                                    <div className="mt-5 flex justify-center items-center gap-x-2">
+                                        {currentStep > 1 && currentStep !== 5 && (
+                                            <button
+                                                type="button"
+                                                className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-[4px] border border-gray-200 bg-[#A7837A] text-white shadow-sm hover:bg-[#ababab] hover:border-blue-500"
+                                                onClick={goBack}
+                                                disabled={currentStep === 1}
+                                            >
+                                                Preview Step
+                                            </button>
+                                        )}
+                                        {currentStep < 4 && (
+                                            <button
+                                                type="button"
+                                                className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-sm text-white border border-green-600 bg-[#282F3A] hover:bg-[#347DA3FF] focus:outline-none"
+                                                onClick={nextStep}
+                                            >
+                                                Next Step
+                                            </button>
+                                        )}
+                                        {currentStep === 4 && (
+                                            <button
+                                                type="button"
+                                                className="py-[6px] px-[14px] inline-flex items-center gap-x-1 text-sm font-medium rounded-sm text-white bg-[#CC5F5A] hover:bg-[#c77874] focus:outline-none"
+                                                onClick={handleSubmit}
+                                            >
+                                                Submit
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </>
                         </div>
                     </div>
                 </div>

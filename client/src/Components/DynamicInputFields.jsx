@@ -35,7 +35,7 @@ const DynamicInputFields = ({
                         value={value}
                         onChange={(e) => handleChange(index, e.target.value)} // Update value when changed
                         placeholder={placeholder}
-                        className={`flex-1 text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] ${errors && errors[index] ? 'border-red-600 hover:border-red-600 focus:border-red-600 focus:shadow-[#ad36365d]'
+                        className={`flex-1 text-sm font-thin border pl-3 rounded-sm p-[7px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)] ${errors && errors[index] ? 'border-red-600 hover:border-red-600 focus:border-red-600 focus:shadow-[#ad36365d]'
                             : 'border-gray-300 hover:border-[#36ad6a] focus:border-[#36ad6a] focus:shadow-[#36ad695d]'}`
                         }
                         onBlur={() => onBlur(index)} // Trigger onBlur for validation
