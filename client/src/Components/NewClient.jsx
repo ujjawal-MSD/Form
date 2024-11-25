@@ -62,126 +62,9 @@ const NewClient = () => {
         return Object.keys(tempErrors).length === 0;
     };
 
-    // Handle Blur Validation for Fields
     const handleBlur = (field) => {
         let tempErrors = { ...errors };
-
-        switch (field) {
-
-            // Step One 
-
-            case "requiredDomain":
-                if (!formData.requiredDomain) {
-                    tempErrors.requiredDomain = "The Required Domain field must have a value.";
-                } else {
-                    tempErrors.requiredDomain = "";
-                }
-                break;
-
-
-            case "whatsappDepositNo":
-                if (!formData.whatsappDepositNo) {
-                    tempErrors.whatsappDepositNo = "The Whatsapp Deposit No field must have a value.";
-                } else {
-                    tempErrors.whatsappDepositNo = "";
-                }
-                break;
-
-
-            case "whatsappWithdrawalNo":
-                if (!formData.whatsappWithdrawalNo) {
-                    tempErrors.whatsappWithdrawalNo = "The Whatsapp Withdrawal No field must have a value.";
-                } else {
-                    tempErrors.whatsappWithdrawalNo = "";
-                }
-                break;
-
-
-
-
-            case "telegramGroupId":
-                if (!formData.telegramGroupId) {
-                    tempErrors.telegramGroupId = "The Telegram Group Id/Telegram Channel Id field must have a value.";
-                } else {
-                    tempErrors.telegramGroupId = "";
-                }
-                break;
-
-
-            case "instaLink":
-                if (!formData.instaLink) {
-                    tempErrors.instaLink = "The Instagram Id field must have a value.";
-                } else {
-                    tempErrors.instaLink = "";
-                }
-                break;
-
-
-            case "xLink":
-                if (!formData.xLink) {
-                    tempErrors.xLink = "The Twitter Id field must have a value.";
-                } else {
-                    tempErrors.xLink = "";
-                }
-                break;
-
-
-            case "customerNo":
-                if (!formData.customerNo) {
-                    tempErrors.customerNo = "The Customer No field must have a value.";
-                } else {
-                    tempErrors.customerNo = "";
-                }
-                break;
-
-
-            case "banner1":
-                if (!formData.banner1) {
-                    tempErrors.banner1 = "The Banner 1 is Required.";
-                } else {
-                    tempErrors.banner1 = "";
-                }
-                break;
-
-
-            case "banner2":
-                if (!formData.banner2) {
-                    tempErrors.banner2 = "The Banner 2 is required.";
-                } else {
-                    tempErrors.banner2 = "";
-                }
-                break;
-
-
-            case "banner3":
-                if (!formData.banner3) {
-                    tempErrors.banner3 = "The Banner 3 is required.";
-                } else {
-                    tempErrors.banner3 = "";
-                }
-                break;
-
-
-            case "logo":
-                if (!formData.logo) {
-                    tempErrors.logo = "The Logo is required.";
-                } else {
-                    tempErrors.logo = "";
-                }
-                break;
-
-            case "provider":
-                if (formData.provider.length === 0) {
-                    tempErrors.provider = "The Provider field is required.";
-                } else {
-                    tempErrors.provider = "";
-                }
-                break;
-
-            default:
-                break;
-        }
-
+        if (!formData[field]) tempErrors[field] = "Required";
         setErrors(tempErrors);
     };
 
@@ -196,7 +79,11 @@ const NewClient = () => {
             try {
                 const data = new FormData();
                 Object.keys(formData).forEach(key => {
-                    data.append(key, formData[key]);
+                    if (Array.isArray(formData[key])) {
+                        formData[key].forEach(item => data.append(key, item));
+                    } else {
+                        data.append(key, formData[key]);
+                    }
                 });
                 const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, data);
                 toast.success('Form Submitted Successfully!');

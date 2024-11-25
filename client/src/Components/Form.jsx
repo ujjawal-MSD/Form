@@ -18,10 +18,10 @@ const Form = ({ formData, setFormData, setErrors, handleBlur, errors }) => {
 
     const validateProvider = (updatedProviders) => {
         let providerError = "";
-        if (updatedProviders.every(provider => !provider.isChecked)) {
+        if (updatedProviders.length === 0) {
             providerError = "The Provider field is required.";
         }
-        setErrors((prevErrors) => ({ ...prevErrors, provider: providerError }));
+        setErrors((prevErrors) => ({ ...prevErrors, providers: providerError }));
     };
 
     const [images, setImages] = useState({ banner1: null, banner2: null, banner3: null, logo: null });
