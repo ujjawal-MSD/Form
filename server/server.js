@@ -42,119 +42,198 @@ app.post('/send-email', async (req, res) => {
     }
 });
 
-const generateEmailContent = (formData) => {
-    // Generate HTML content based on formData
+const generateEmailContent = formData => {
     return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>New Client Details</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-            body {
-                font-family: 'Roboto', sans-serif;
-            }
-            .font-serif {
-                font-family: 'Roboto', sans-serif;
-            }
-        </style>
-    </head>
-    <body class="bg-gray-100 text-gray-800">
-        <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg">
-            <!-- Header -->
-            <div class="flex items-center justify-between bg-[#6A5F5A] text-white px-5 py-4 h-28">
-                <img src="./whitelabelw.png" alt="Demo Logo" class="h-10" />
-                <div>
-                    <h1 class="text-xl font-semibold">New Client Details</h1>
-                    <p class="text-sm font-thin">Request ID: ${formData.requestId}</p>
-                    <p class="text-xs font-thin">Date: ${new Date(formData.submissionDateTime).toLocaleDateString()}</p>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>New Client Details</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+                body {
+                    font-family: 'Roboto', sans-serif;
+                    background-color: #f3f4f6;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    max-width: 800px;
+                    margin: 20px auto;
+                    background-color: #dce0e6;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    overflow: hidden;
+                }
+                .header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: #6A5F5A;
+                    color: white;
+                    padding: 20px;
+                }
+                .header img {
+                    height: 40px;
+                }
+                .header-text {
+                    text-align: right;
+                }
+                .header-text h1 {
+                    margin: 0;
+                    font-size: 18px;
+                }
+                .header-text p {
+                    margin: 5px 0;
+                    font-size: 14px;
+                }
+                .section {
+                    margin: 20px;
+                    padding: 10px;
+                    background-color: #f9fafb;
+                    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+                }
+                .section-heading {
+                    background-color: #908D89;
+                    color: white;
+                    font-weight: bold;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                }
+                .section-content ul {
+                    list-style: none;
+                    padding: 0;
+                }
+                .section-content li {
+                    margin-bottom: 8px;
+                    font-size: 14px;
+                }
+                .highlight {
+                    background-color: #e4dfd8;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 14px;
+                    padding: 20px;
+                    border-top: 1px solid #e4dfd8;
+                    color: #666;
+                }
+                .footer a {
+                    color: #6A5F5A;
+                    text-decoration: none;
+                    font-weight: bold;
+                }
+                .footer a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <!-- Header -->
+                <div class="header">
+                  
+                    <div class="header-text">
+                        <h1>New Client Details</h1>
+                        <p>Request ID: ${formData.requestId}</p>
+                        <p>Date: ${new Date(
+        formData.submissionDateTime
+    ).toLocaleDateString()}
+                        </p>
+                    </div>
+                </div>
+                
+       <!-- General Information Section -->
+           <div class="section">
+           <div class="section-heading">General Information</div>
+           <div class="section-content">
+             <ul>
+              <li><strong>Company Name:</strong> ${formData.companyName}</li>
+              <li><strong>Company URL:</strong> ${formData.companyUrl}</li>
+              <li><strong>Hosting Location:</strong> ${formData.hostingLocation
+        }</li>
+            <li><strong>Wallet Type:</strong> ${formData.walletType}</li>
+            <li><strong>Target Country:</strong></li>
+            <ul>
+                ${formData.provider
+            .map(
+                p =>
+                    `<li>${p.name} <span style="float: right;">Currency: <span class="highlight">${p.currency}</span></span></li>`
+            )
+            .join('')}
+                 </ul>
+
+    </div>
+</div>
+    
+                <!-- Contact Details Section -->
+                <div class="section">
+                    <div class="section-heading">Contact Details</div>
+                    <div class="section-content">
+                        <ul>
+                            <li><strong>Email Id:</strong> ${formData.clientEmail.join(
+                ', '
+            )}</li>
+                            <li><strong>Manager Skype User Id:</strong> ${formData.managerSkypeId.join(
+                ', '
+            )}</li>
+                            <li><strong>Finance Skype User ID:</strong> ${formData.financeSkypeId.join(
+                ', '
+            )}</li>
+                            <li><strong>Whatsapp No.:</strong> ${formData.whatsappNo.join(
+                ', '
+            )}</li>
+                            <li><strong>Telegram Id:</strong> ${formData.telegramId.join(
+                ', '
+            )}</li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <!-- Staging Information Section -->
+                <div class="section">
+                    <div class="section-heading">Staging Information</div>
+                    <div class="section-content">
+                        <ul>
+                            <li><strong>Staging, Back Office IP Address:</strong> <span class="highlight">${formData.backOfficeIpAddress
+        }</span></li>
+                            <li><strong>Staging, API IP Address:</strong> <span class="highlight">${formData.APIIpAddress
+        }</span></li>
+                            <li><strong>Staging Endpoint URL:</strong> <span class="highlight">${formData.stagingEndpointURL
+        }</span></li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <!-- Production Information Section -->
+                <div class="section">
+                    <div class="section-heading">Production Information</div>
+                    <div class="section-content">
+                        <ul>
+                            <li><strong>Production, Back Office IP Address:</strong> <span class="highlight">${formData.prodBackOfficeIpAddress
+        }</span></li>
+                            <li><strong>Production, API IP Address:</strong> <span class="highlight">${formData.prodApiIpAddress
+        }</span></li>
+                            <li><strong>Production Endpoint URL:</strong> <span class="highlight">${formData.prodEndpointURL
+        }</span></li>
+                        </ul>
+                    </div>
+                </div>
+  
+                <!-- Footer -->
+                <div class="footer">
+                    <p>Thank you for choosing our services. For any queries, feel free to reach out to us.</p>
+                    <p><a href="https://www.example.com">Visit Our Website</a> | <a href="mailto:support@example.com">Contact Support</a></p>
                 </div>
             </div>
-            <!-- Email Body -->
-            <div class="p-5 space-y-6">
-                <!-- General Information -->
-                <div class="bg-gray-50 p-0 shadow">
-                    <div class="bg-[#908D89] text-white">
-                        <h2 class="text-lg font-semibold border-b pb-2 mb-0 p-2">General Information</h2>
-                    </div>
-                    <ul class="space-y-2 p-2">
-                        <li><span class="font-serif font-bold text-lg">Company Name:</span> ${formData.companyName}</li>
-                        <li><span class="font-serif font-bold text-lg">Company URL:</span> ${formData.companyUrl}</li>
-                        <li><span class="font-serif font-bold text-lg">Hosting Location:</span> ${formData.hostingLocation}</li>
-                        <li><span class="font-serif font-bold text-lg">Wallet Type:</span> ${formData.walletType}</li>
-                        <li class="flex justify-between items-center">
-                            <span><strong>Target Country:</strong> ${formData.provider.map(p => p.name).join(', ')}</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>Currency:</strong> ${formData.provider.map(p => p.currency).join(', ')}</span>
-                        </li>
-                    </ul>
-                </div>
-                <!-- Contact Details -->
-                <div class="bg-gray-50 p-0 shadow">
-                    <div class="bg-[#908D89] text-white">
-                        <h2 class="text-lg font-semibold border-b pb-2 mb-0 p-2">Contact Details</h2>
-                    </div>
-                    <ul class="space-y-2 p-2">
-                        <li><span class="font-serif font-bold text-lg">Email Id:</span> ${formData.clientEmail.join(', ')}</li>
-                        <li><span class="font-serif font-bold text-lg">Manager Skype User Id:</span> ${formData.managerSkypeId.join(', ')}</li>
-                        <li><span class="font-serif font-bold text-lg">Finance Skype User ID:</span> ${formData.financeSkypeId.join(', ')}</li>
-                        <li><span class="font-serif font-bold text-lg">Whatsapp No.:</span> ${formData.whatsappNo.join(', ')}</li>
-                        <li><span class="font-serif font-bold text-lg">Telegram Id:</span> ${formData.telegramId.join(', ')}</li>
-                    </ul>
-                </div>
-                <!-- Staging Info -->
-                <div class="bg-gray-50 p-0 shadow">
-                    <div class="bg-[#908D89] text-white">
-                        <h2 class="text-lg font-semibold border-b pb-2 mb-0 p-2">Staging Information</h2>
-                    </div>
-                    <ul class="space-y-2 p-2">
-                        <li class="flex justify-between items-center">
-                            <span class="font-serif font-bold text-lg">Staging, Back Office IP Address:</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>IP:</strong> ${formData.backOfficeIpAddress}</span>
-                        </li>
-                        <li class="flex justify-between items-center">
-                            <span class="font-serif font-bold text-lg">Staging, API IP Address:</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>IP:</strong> ${formData.APIIpAddress}</span>
-                        </li>
-                        <li class="flex justify-between items-center">
-                            <span class="font-serif font-bold text-lg">Staging Endpoint URL:</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>URL:</strong> ${formData.stagingEndpointURL}</span>
-                        </li>
-                    </ul>
-                </div>
-                <!-- Production Info -->
-                <div class="bg-gray-50 p-0 shadow">
-                    <div class="bg-[#908D89] text-white">
-                        <h2 class="text-lg font-semibold border-b pb-2 mb-0 p-2">Production Information</h2>
-                    </div>
-                    <ul class="space-y-2 p-2">
-                        <li class="flex justify-between items-center">
-                            <span class="font-serif font-bold text-lg">Production, Back Office IP Address:</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>IP:</strong> ${formData.prodBackOfficeIpAddress}</span>
-                        </li>
-                        <li class="flex justify-between items-center">
-                            <span class="font-serif font-bold text-lg">Production, API IP Address:</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>IP:</strong> ${formData.prodApiIpAddress}</span>
-                        </li>
-                        <li class="flex justify-between items-center">
-                            <span class="font-serif font-bold text-lg">Production Endpoint URL:</span>
-                            <span class="bg-[#e4dfd8] px-2 py-1 rounded"><strong>URL:</strong> ${formData.prodEndpointURL}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    `;
-
-
-
-
+        </body>
+        </html>
+      `;
 };
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
-})
+});
