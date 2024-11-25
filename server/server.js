@@ -1,51 +1,52 @@
 const express = require('express');
+const multer = require('multer');
 const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-
 const app = express();
-const port = 3001;
-
+const PORT = 3001;
+const cors = require('cors');
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.post('/send-email', async (req, res) => {
+// Multer setup for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Nodemailer setup
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'trackerzpoint@gmail.com',
+        pass: 'pjcekmmgzpjcisbh',
+    }
+});
+
+app.post('/send-email', upload.fields([{ name: 'banner1' }, { name: 'banner2' }, { name: 'banner3' }, { name: 'logo' }]), (req, res) => {
     const formData = req.body;
+    const files = req.files;
 
-    // Setup transporter
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'trackerzpoint@gmail.com',
-            pass: 'pjcekmmgzpjcisbh',
-        },
-    });
+    const attachments = Object.keys(files).map(key => ({
+        filename: files[key][0].originalname,
+        content: files[key][0].buffer
+    }));
 
-    // Setup email data
-    let mailOptions = {
+    const mailOptions = {
         from: 'trackerzpoint@gmail.com',
         to: 'msdujjawal@gmail.com',
         subject: 'New Client Details',
         text: JSON.stringify(formData, null, 2),
-        html: generateEmailContent(formData),
+        html: `<h1>New Client Details</h1><pre>${JSON.stringify(formData, null, 2)}</pre>`,
+        attachments
     };
 
-    // Send mail with defined transport object
-    try {
-        let info = await transporter.sendMail(mailOptions);
-        console.log('Message sent: %s', info.messageId);
-        res.status(200).send('Email sent successfully');
-    } catch (error) {
-        console.error('Error sending email: %s', error);
-        res.status(500).send('Error sending email');
-    }
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).json({ error: 'Failed to send email' });
+        }
+        res.status(200).json({ message: 'Email sent successfully' });
+    });
 });
 
-const generateEmailContent = (formData) => {
-    // Generate HTML content based on formData
-    return `<h1>New Client Details</h1><pre>${JSON.stringify(formData, null, 2)}</pre>`;
-};
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-})
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
