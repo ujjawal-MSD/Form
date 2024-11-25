@@ -108,11 +108,13 @@ const generateEmailContent = formData => {
                     margin-bottom: 8px;
                     font-size: 14px;
                 }
+
                 .highlight {
                     background-color: #e4dfd8;
-                    padding: 5px 10px;
+                    padding: 1px 10px;
                     border-radius: 4px;
                     font-weight: bold;
+                    float: right;
                 }
                 .footer {
                     text-align: center;
@@ -161,7 +163,7 @@ const generateEmailContent = formData => {
                 ${formData.provider
             .map(
                 p =>
-                    `<li>${p.name} <span style="float: right;">Currency: <span class="highlight">${p.currency}</span></span></li>`
+                    `<li>${p.name} <span class="highlight">Currency: ${p.currency}</span></li>`
             )
             .join('')}
                  </ul>
