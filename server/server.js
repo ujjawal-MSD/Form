@@ -26,7 +26,7 @@ app.post('/send-email', async (req, res) => {
     let mailOptions = {
         from: process.env.SENDER_EMAIL,
         to: process.env.RECIEVER_EMAIL,
-        subject: 'New Client Details',
+        subject: 'White Label New Client Details',
         text: JSON.stringify(formData, null, 2),
         html: generateEmailContent(formData),
     };
@@ -76,8 +76,13 @@ const generateEmailContent = formData => {
                 .header img {
                     height: 40px;
                 }
+                .header-left {
+                    display: flex;
+                    align-items: center;
+                }
                 .header-text {
                     text-align: right;
+                    margin-left: auto;
                 }
                 .header-text h1 {
                     margin: 0;
@@ -137,7 +142,9 @@ const generateEmailContent = formData => {
             <div class="container">
                 <!-- Header -->
                 <div class="header">
-                  
+                 <div class="header-left">
+                        <img src="./logo.png" alt="Logo" />
+                    </div>
                     <div class="header-text">
                         <h1>New Client Details</h1>
                         <p>Request ID: ${formData.requestId}</p>
