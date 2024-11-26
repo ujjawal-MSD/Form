@@ -1,28 +1,61 @@
 import React, { useState } from 'react';
 
 const Form = ({ formData, setFormData, setErrors, handleBlur, errors }) => {
-    const providers = [
-        'Provider 1', 'Provider 2', 'Provider 3', 'Provider 4', 'Provider 5'
+    const sportsCasinoProviders = [
+        "Cricket", "Football", "Tennis", "Kabaddi", "Esoccer", "Horse Racing", "Greyhound Racing",
+        "Table Tennis", "Basketball", "Boxing", "Mixed Martial Arts", "American Football", "Volleyball", "Badminton",
+        "Snooker", "Ice Hockey", "E Games", "Futsal", "Handball", "Motor Sports", "Politics"
     ];
 
-    const handleProviderChange = (provider) => {
+    const liveCasinoProviders = [
+        "Tembo", "Creedroomz", "Vivo Gaming", "Evolution", "EZUGI", "CockFight"
+    ];
+
+    const slotGameProviders = [
+        "NetEnt", "Red Tiger", "1X2 Gaming", "BB Gaming", "Booongo", "Blueprint Gaming", "Dragoon Soft", "Pocket Games",
+        "Elk Studios", "Evoplay", "Fantasma Games", "Gamefish Global", "Habanero", "Hacksaw Gaming", "Iron Dog Studio",
+        "Kalamba Games", "Lady Luck", "Nolimit city", "OMI Gaming", "OneTouch", "Play & GO", "PlayPearls", "Push Gaming",
+        "Quickspin", "Relax Gaming", "RTG Slots", "Spearhead Studios", "Slotmill", "Splitrock Gaming", "Thunderkick", "Woohoo Games",
+        "Yggdrasil", "Amatic", "Egt", "Wazdan", "Novomatic", "Pragmatic", "Virtual Games"
+    ];
+
+    const fantasyGameProviders = [
+        "smart", "our", "aviator", "creedroomz", "scratch", "darwin"
+    ];
+
+    const handleProviderChange = (provider, type) => {
         let updatedProviders;
-        if (formData.providers.includes(provider)) {
-            updatedProviders = formData.providers.filter(item => item !== provider);
+        if (formData[type].includes(provider)) {
+            updatedProviders = formData[type].filter(item => item !== provider);
         } else {
-            updatedProviders = [...formData.providers, provider];
+            updatedProviders = [...formData[type], provider];
         }
-        setFormData({ ...formData, providers: updatedProviders });
-        validateProvider(updatedProviders);
+        setFormData({ ...formData, [type]: updatedProviders });
+        validateProvider(updatedProviders, type);
     };
 
-    const validateProvider = (updatedProviders) => {
+    const validateProvider = (updatedProviders, type) => {
         let providerError = "";
         if (updatedProviders.length === 0) {
-            providerError = "The Provider field is required.";
+            if (type === 'sportsCasinoProviders') {
+                providerError = "The Sports Casino Providers is required.";
+            }
+            if (type === 'liveCasinoProviders') {
+                providerError = "The Live Casino Providers is required.";
+            }
+            if (type === 'slotGameProviders') {
+                providerError = "The Slot Game Providers is required.";
+            }
+            if (type === 'fantasyGameProviders') {
+                providerError = "The Fantasy Game Providers is required.";
+            }
         }
-        setErrors((prevErrors) => ({ ...prevErrors, providers: providerError }));
+        setErrors((prevErrors) => ({ ...prevErrors, [type]: providerError }));
     };
+
+
+
+
 
     const [images, setImages] = useState({ banner1: null, banner2: null, banner3: null, logo: null });
 
@@ -219,7 +252,7 @@ const Form = ({ formData, setFormData, setErrors, handleBlur, errors }) => {
                     Logo Upload <span className="text-red-600">*</span>
                 </label>
                 <div
-                    className="mt-2 w-full h-40 border-2 border-dashed border-[#6A5F5A] rounded-md flex items-center justify-center bg-[#908d8949]"
+                    className={`mt-2 w-full h-40 border-2 border-dashed border-[#6A5F5A] ${errors.logo && 'border-red-500'}  rounded-md flex items-center justify-center bg-[#908d8949]`}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => handleDrop(e, 'logo')}
                 >
@@ -245,23 +278,24 @@ const Form = ({ formData, setFormData, setErrors, handleBlur, errors }) => {
                 {errors.logo && <p className="text-red-500 text-sm">{errors.logo}</p>}
             </div>
 
+            {/* Provides & there Category  */}
             <div>
                 <div className="overflow-x-auto">
                     <div className="min-w-full">
                         <div className="bg-[#6A5F5A]">
                             <div>
-                                <p className="font-normal text-sm text-white p-3 text-center">Providers (Category required) </p>
+                                <p className="font-normal text-sm text-white p-3 text-center">Sports Casino Providers </p>
                             </div>
                         </div>
                         <div className="border border-gray-200">
-                            <div className="grid grid-cols-3 grid-rows-4 p-3">
-                                {providers.map((provider, index) => (
+                            <div className="grid grid-cols-3 grid-rows-4 p-3 space-y-2">
+                                {sportsCasinoProviders.map((provider, index) => (
                                     <div key={index} className="flex items-center">
                                         <input
                                             type="checkbox"
                                             value={provider}
-                                            checked={formData.providers.includes(provider)}
-                                            onChange={() => handleProviderChange(provider)}
+                                            checked={formData.sportsCasinoProviders.includes(provider)}
+                                            onChange={() => handleProviderChange(provider, 'sportsCasinoProviders')}
                                             className="w-4 h-4 checked:bg-green-500"
                                         />
                                         <label className="px-2 font-thin text-[#333639] text-sm">{provider}</label>
@@ -269,10 +303,116 @@ const Form = ({ formData, setFormData, setErrors, handleBlur, errors }) => {
                                 ))}
                             </div>
                         </div>
-                        {errors.providers && <p className="text-red-600">{errors.providers}</p>}
+                        {errors.sportsCasinoProviders && <p className="text-red-600">{errors.sportsCasinoProviders}</p>}
                     </div>
                 </div>
             </div>
+
+
+
+
+            <div>
+                <div className="overflow-x-auto">
+                    <div className="min-w-full">
+                        <div className="bg-[#6A5F5A]">
+                            <div>
+                                <p className="font-normal text-sm text-white p-3 text-center">Live Casino Providers </p>
+                            </div>
+                        </div>
+                        <div className="border border-gray-200">
+                            <div className="grid grid-cols-3 grid-rows-4 p-3 space-y-2 ">
+                                {liveCasinoProviders.map((provider, index) => (
+                                    <div key={index} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value={provider}
+                                            checked={formData.liveCasinoProviders.includes(provider)}
+                                            onChange={() => handleProviderChange(provider, 'liveCasinoProviders')}
+                                            className="w-4 h-4 checked:bg-green-500"
+                                        />
+                                        <label className="px-2 font-thin text-[#333639] text-sm">{provider}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {errors.liveCasinoProviders && <p className="text-red-600">{errors.liveCasinoProviders}</p>}
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <div>
+                <div className="overflow-x-auto">
+                    <div className="min-w-full">
+                        <div className="bg-[#6A5F5A]">
+                            <div>
+                                <p className="font-normal text-sm text-white p-3 text-center">Slot Game Providers </p>
+                            </div>
+                        </div>
+                        <div className="border border-gray-200">
+                            <div className="grid grid-cols-3 grid-rows-4 p-3 space-y-2">
+                                {slotGameProviders.map((provider, index) => (
+                                    <div key={index} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value={provider}
+                                            checked={formData.slotGameProviders.includes(provider)}
+                                            onChange={() => handleProviderChange(provider, 'slotGameProviders')}
+                                            className="w-4 h-4 checked:bg-green-500"
+                                        />
+                                        <label className="px-2 font-thin text-[#333639] text-sm">{provider}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {errors.slotGameProviders && <p className="text-red-600">{errors.slotGameProviders}</p>}
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+            <div>
+                <div className="overflow-x-auto">
+                    <div className="min-w-full">
+                        <div className="bg-[#6A5F5A]">
+                            <div>
+                                <p className="font-normal text-sm text-white p-3 text-center">Fantasy Game Providers</p>
+                            </div>
+                        </div>
+                        <div className="border border-gray-200">
+                            <div className="grid grid-cols-3 grid-rows-4 p-3 space-y-2">
+                                {fantasyGameProviders.map((provider, index) => (
+                                    <div key={index} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            value={provider}
+                                            checked={formData.fantasyGameProviders.includes(provider)}
+                                            onChange={() => handleProviderChange(provider, 'fantasyGameProviders')}
+                                            className="w-4 h-4 checked:bg-green-500"
+                                        />
+                                        <label className="px-2 font-thin text-[#333639] text-sm">{provider}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {errors.fantasyGameProviders && <p className="text-red-600">{errors.fantasyGameProviders}</p>}
+                    </div>
+                </div>
+            </div>
+
+
+
+
         </div>
     );
 };

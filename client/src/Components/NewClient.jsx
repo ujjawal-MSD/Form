@@ -31,7 +31,11 @@ const NewClient = () => {
         banner2: null,
         banner3: null,
         logo: null,
-        providers: [],
+        sportsCasinoProviders: [],
+        liveCasinoProviders: [],
+        slotGameProviders: [],
+        fantasyGameProviders: [],
+
         submissionDateTime: new Date().toISOString(),
     });
 
@@ -56,7 +60,10 @@ const NewClient = () => {
             if (!formData.banner2) tempErrors.banner2 = "The Banner 2 is required";
             if (!formData.banner3) tempErrors.banner3 = "The Banner 3 is required";
             if (!formData.logo) tempErrors.logo = "The Logo is required";
-            if (formData.providers.length === 0) tempErrors.providers = "The Provider field must have a value";
+            if (formData.sportsCasinoProviders.length === 0) tempErrors.sportsCasinoProviders = "The Sports Casino Providers field must have a value";
+            if (formData.liveCasinoProviders.length === 0) tempErrors.liveCasinoProviders = "The Live Casino Providers field must have a value";
+            if (formData.slotGameProviders.length === 0) tempErrors.slotGameProviders = "The Slot Game Providers field must have a value";
+            if (formData.fantasyGameProviders.length === 0) tempErrors.fantasyGameProviders = "The Fantasy Game Providers field must have a value";
         }
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
@@ -64,9 +71,59 @@ const NewClient = () => {
 
     const handleBlur = (field) => {
         let tempErrors = { ...errors };
-        if (!formData[field]) tempErrors[field] = "Required";
+        switch (field) {
+            case 'requiredDomain':
+                if (!formData.requiredDomain) tempErrors.requiredDomain = "The Required Domain field must have a value";
+                break;
+            case 'whatsappDepositNo':
+                if (!formData.whatsappDepositNo) tempErrors.whatsappDepositNo = "The Whatsapp Deposite No. field must have a value";
+                break;
+            case 'whatsappWithdrawalNo':
+                if (!formData.whatsappWithdrawalNo) tempErrors.whatsappWithdrawalNo = "The Whatsapp Withdrawl No. field must have a value";
+                break;
+            case 'telegramGroupId':
+                if (!formData.telegramGroupId) tempErrors.telegramGroupId = "The Telegram Group Id/Telegram Channel Id field must have a value";
+                break;
+            case 'instaLink':
+                if (!formData.instaLink) tempErrors.instaLink = "The Instagram Id field must have a value";
+                break;
+            case 'xLink':
+                if (!formData.xLink) tempErrors.xLink = "The Twitter Id field must have a value";
+                break;
+            case 'customerNo':
+                if (!formData.customerNo) tempErrors.customerNo = "The Customer No. field must have a value";
+                break;
+            case 'banner1':
+                if (!formData.banner1) tempErrors.banner1 = "The Banner 1 is Required";
+                break;
+            case 'banner2':
+                if (!formData.banner2) tempErrors.banner2 = "The Banner 2 is required";
+                break;
+            case 'banner3':
+                if (!formData.banner3) tempErrors.banner3 = "The Banner 3 is required";
+                break;
+            case 'logo':
+                if (!formData.logo) tempErrors.logo = "The Logo is required";
+                break;
+            case 'sportsCasinoProviders':
+                if (formData.sportsCasinoProviders.length === 0) tempErrors.sportsCasinoProviders = "The Sports Casino Providers field must have a value";
+                break;
+            case 'liveCasinoProviders':
+                if (formData.liveCasinoProviders.length === 0) tempErrors.liveCasinoProviders = "The Live Casino Providers field must have a value";
+                break;
+            case 'slotGameProviders':
+                if (formData.slotGameProviders.length === 0) tempErrors.slotGameProviders = "The Slot Game Providers field must have a value";
+                break;
+            case 'fantasyGameProviders':
+                if (formData.fantasyGameProviders.length === 0) tempErrors.fantasyGameProviders = "The Fantasy Game Providers field must have a value";
+                break;
+            default:
+                break;
+        }
         setErrors(tempErrors);
     };
+
+
 
     const nextStep = () => {
         setCurrentStep((prevStep) => prevStep + 1);
@@ -114,8 +171,6 @@ const NewClient = () => {
                             <div className="hidden md:block items-center">
                                 <select value={selectedLanguage} onChange={handleLanguageChange} className="border text-[#282f3a] border-gray-300 rounded-sm p-2 h-10 w-36 mr-[5px]">
                                     <option value="English">English</option>
-                                    <option value="Spanish">Spanish</option>
-                                    <option value="French">French</option>
                                 </select>
                             </div>
                         </header>

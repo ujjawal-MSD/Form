@@ -16,13 +16,16 @@ const upload = multer({ storage });
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'trackerzpoint@gmail.com',
-        pass: 'pjcekmmgzpjcisbh',
-    }
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_PASS,
+    },
 });
 
 const generateEmailTemplate = (formData) => {
-    const providersList = Array.isArray(formData.providers) ? formData.providers.map(provider => `<li>${provider}</li>`).join('') : '';
+    const sportsCasinoProvidersList = Array.isArray(formData.sportsCasinoProviders) ? formData.sportsCasinoProviders.map(provider => `<li>${provider}</li>`).join('') : '';
+    const liveCasinoProvidersList = Array.isArray(formData.liveCasinoProviders) ? formData.liveCasinoProviders.map(provider => `<li>${provider}</li>`).join('') : '';
+    const slotGameProvidersList = Array.isArray(formData.slotGameProviders) ? formData.slotGameProviders.map(provider => `<li>${provider}</li>`).join('') : '';
+    const fantasyGameProvidersList = Array.isArray(formData.fantasyGameProviders) ? formData.fantasyGameProviders.map(provider => `<li>${provider}</li>`).join('') : '';
 
     return `
         <!DOCTYPE html>
@@ -57,8 +60,13 @@ const generateEmailTemplate = (formData) => {
                 .header img {
                     height: 40px;
                 }
+                .header-left {
+                    display: flex;
+                    align-items: center;
+                }
                 .header-text {
                     text-align: right;
+                    margin-left: auto;
                 }
                 .header-text h1 {
                     margin: 0;
@@ -116,8 +124,11 @@ const generateEmailTemplate = (formData) => {
             <div class="container">
                 <!-- Header -->
                 <div class="header">
+                    <div class="header-left">
+                        <img src="./logo.png" alt="Logo" />
+                    </div>
                     <div class="header-text">
-                        <h1>New Client Details</h1>
+                        <h1>Hyatt New Client Details</h1>
                         <p>Request ID: ${formData.requestId}</p>
                         <p>Date: ${new Date(formData.submissionDateTime).toLocaleDateString()}</p>
                     </div>
@@ -141,18 +152,50 @@ const generateEmailTemplate = (formData) => {
                 
                 <!-- Providers Section -->
                 <div class="section">
-                    <div class="section-heading">Providers</div>
+                    <div class="section-heading">Sports Game Providers</div>
                     <div class="section-content">
                         <ul>
-                            ${providersList}
+                            ${sportsCasinoProvidersList}
                         </ul>
                     </div>
                 </div>
-                
+
+                <!-- Providers Section -->
+                <div class="section">
+                    <div class="section-heading">Live Casino Providers</div>
+                    <div class="section-content">
+                        <ul>
+                            ${liveCasinoProvidersList}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Providers Section -->
+                <div class="section">
+                    <div class="section-heading">Slot Game Providers</div>
+                    <div class="section-content">
+                        <ul>
+                            ${slotGameProvidersList}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Providers Section -->
+                <div class="section">
+                    <div class="section-heading">Fantasy Game Providers</div>
+                    <div class="section-content">
+                        <ul>
+                            ${fantasyGameProvidersList}
+                        </ul>
+                    </div>
+                </div>
+
+
+                                
                 <!-- Footer -->
                 <div class="footer">
                     <p>Thank you for choosing our services. For any queries, feel free to reach out to us.</p>
-                    <p><a href="https://www.example.com">Visit Our Website</a> | <a href="mailto:support@example.com">Contact Support</a></p>
+                    <p><a href="#">Visit Our Website</a> | <a href="mailto:${process.env.RECIEVER_EMAIL}">Contact Support</a></p>
                 </div>
             </div>
         </body>
@@ -171,9 +214,9 @@ app.post('/send-email', upload.fields([{ name: 'banner1' }, { name: 'banner2' },
     }));
 
     const mailOptions = {
-        from: 'trackerzpoint@gmail.com',
-        to: 'msdujjawal@gmail.com',
-        subject: 'New Client Details',
+        from: process.env.SENDER_EMAIL,
+        to: process.env.RECIEVER_EMAIL,
+        subject: 'Hyatt New Client Details',
         html: generateEmailTemplate(formData),
         attachments
     };
