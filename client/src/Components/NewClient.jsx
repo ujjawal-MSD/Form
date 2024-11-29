@@ -7,7 +7,7 @@ import StepFour from "./Steppers/StepFour";
 import FinalStep from "./Steppers/FinalStep";
 import { TailSpin } from 'react-loader-spinner';
 import { toast, Toaster } from 'react-hot-toast';
-import axios from 'axios';
+import sendEmail from './EmailSend';
 
 // Validation Function
 const validateEmail = (email) => {
@@ -409,11 +409,10 @@ const NewClient = () => {
     const handleSubmit = async () => {
         setIsLoading(true); // Set loading to true
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, formData);
-            toast.success('Form Submitted Successfully!'); // Show success toast
+            await sendEmail(formData);
             nextStep();
         } catch (error) {
-            toast.error('Error Form Submittion');
+            console.error('Error sending email:', error);
         } finally {
             setIsLoading(false); // Set loading to false
         }
