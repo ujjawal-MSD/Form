@@ -4,7 +4,7 @@ import Form from "./Form";
 import FinalStep from "./FinalStep";
 import { TailSpin } from 'react-loader-spinner';
 import { toast, Toaster } from 'react-hot-toast';
-import axios from 'axios';
+import EmailSend from "./Services/EmailSend";
 
 const generateRequestId = () => {
     const date = new Date();
@@ -129,20 +129,49 @@ const NewClient = () => {
         setCurrentStep((prevStep) => prevStep + 1);
     };
 
+    // const handleSubmit = async () => {
+    //     setIsLoading(true);
+    //     const isValid = validateStep();
+    //     if (isValid) {
+    //         try {
+    //             const data = new FormData();
+    //             Object.keys(formData).forEach(key => {
+    //                 if (Array.isArray(formData[key])) {
+    //                     formData[key].forEach(item => data.append(key, item));
+    //                 } else {
+    //                     data.append(key, formData[key]);
+    //                 }
+    //             });
+    //             // const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, data);
+    //             await EmailSend(formData, files);
+    //             toast.success('Form Submitted Successfully!');
+    //             nextStep();
+    //         } catch (error) {
+    //             toast.error('Error Form Submission');
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     } else {
+    //         toast.error('Form validation failed');
+    //         setIsLoading(false);
+    //     }
+    // };
+
+
+
+
+
+
+
+
+
     const handleSubmit = async () => {
         setIsLoading(true);
         const isValid = validateStep();
         if (isValid) {
             try {
-                const data = new FormData();
-                Object.keys(formData).forEach(key => {
-                    if (Array.isArray(formData[key])) {
-                        formData[key].forEach(item => data.append(key, item));
-                    } else {
-                        data.append(key, formData[key]);
-                    }
-                });
-                const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, data);
+                const files = [formData.banner1, formData.banner2, formData.banner3, formData.logo].filter(file => file !== null);
+                await EmailSend(formData, files);
                 toast.success('Form Submitted Successfully!');
                 nextStep();
             } catch (error) {
