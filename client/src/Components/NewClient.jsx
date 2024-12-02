@@ -15,27 +15,27 @@ const generateRequestId = () => {
     return `${year}${month}${day}-${randomNum}`;
 };
 
+
+// Validation Function
+const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+};
+
+
 const NewClient = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         requestId: generateRequestId(),
-        requiredDomain: "",
-        whatsappDepositNo: "",
-        whatsappWithdrawalNo: "",
-        telegramGroupId: "",
-        instaLink: "",
-        xLink: "",
-        customerNo: "",
-        banner1: null,
-        banner2: null,
-        banner3: null,
-        logo: null,
-        sportsCasinoProviders: [],
-        liveCasinoProviders: [],
-        slotGameProviders: [],
-        fantasyGameProviders: [],
-
+        companyName: "",
+        clientEmail: "",
+        clientContactNo: "",
+        category: "",
+        description: "",
+        targetCountry: "",
+        targetState: "",
+        targetCity: "",
         submissionDateTime: new Date().toISOString(),
     });
 
@@ -49,21 +49,26 @@ const NewClient = () => {
     const validateStep = () => {
         let tempErrors = {};
         if (currentStep === 1) {
-            if (!formData.requiredDomain) tempErrors.requiredDomain = "The Required Domain field must have a value";
-            if (!formData.whatsappDepositNo) tempErrors.whatsappDepositNo = "The Whatsapp Deposite No. field must have a value";
-            if (!formData.whatsappWithdrawalNo) tempErrors.whatsappWithdrawalNo = "The Whatsapp Withdrawl No. field must have a value";
-            if (!formData.telegramGroupId) tempErrors.telegramGroupId = "The Telegram Group Id/Telegram Channel Id field must have a value";
-            if (!formData.instaLink) tempErrors.instaLink = "The Instagram Id field must have a value";
-            if (!formData.xLink) tempErrors.xLink = "The Twitter Id field must have a value";
-            if (!formData.customerNo) tempErrors.customerNo = "The Customer No. field must have a value";
-            if (!formData.banner1) tempErrors.banner1 = "The Banner 1 is Required";
-            if (!formData.banner2) tempErrors.banner2 = "The Banner 2 is required";
-            if (!formData.banner3) tempErrors.banner3 = "The Banner 3 is required";
-            if (!formData.logo) tempErrors.logo = "The Logo is required";
-            if (formData.sportsCasinoProviders.length === 0) tempErrors.sportsCasinoProviders = "The Sports Casino Providers field must have a value";
-            if (formData.liveCasinoProviders.length === 0) tempErrors.liveCasinoProviders = "The Live Casino Providers field must have a value";
-            if (formData.slotGameProviders.length === 0) tempErrors.slotGameProviders = "The Slot Game Providers field must have a value";
-            if (formData.fantasyGameProviders.length === 0) tempErrors.fantasyGameProviders = "The Fantasy Game Providers field must have a value";
+            if (!formData.companyName) tempErrors.companyName = "The Company Name field must have a value.";
+
+            if (!formData.clientEmail.trim()) {
+                tempErrors.clientEmail = "The Client Email field must have a value.";
+            } else if (!validateEmail(formData.clientEmail)) {
+                tempErrors.clientEmail = "The Client Email must be a valid email address.";
+            }
+
+            if (!formData.clientContactNo) tempErrors.clientContactNo = "The Client Contact No. field must have a value";
+
+            if (!formData.category) tempErrors.category = "The Category field must have a value";
+
+            if (!formData.description) tempErrors.description = "The Description field must have a value";
+
+            if (!formData.targetCountry) tempErrors.targetCountry = "The Target Country field must have a value";
+
+            if (!formData.targetState) tempErrors.targetState = "The Target State field must have a value";
+
+            if (!formData.targetCity) tempErrors.targetCity = "The Target City field must have a value";
+
         }
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
@@ -72,54 +77,81 @@ const NewClient = () => {
     const handleBlur = (field) => {
         let tempErrors = { ...errors };
         switch (field) {
-            case 'requiredDomain':
-                if (!formData.requiredDomain) tempErrors.requiredDomain = "The Required Domain field must have a value";
+            case "companyName":
+                if (!formData.companyName) {
+                    tempErrors.companyName = "The Company Name field must have a value.";
+                } else {
+                    tempErrors.companyName = "";
+                }
                 break;
-            case 'whatsappDepositNo':
-                if (!formData.whatsappDepositNo) tempErrors.whatsappDepositNo = "The Whatsapp Deposite No. field must have a value";
+
+
+            case "clientEmail":
+                if (!formData.clientEmail.trim()) {
+                    tempErrors.clientEmail = "The Client Email field must have a value.";
+                } else if (!validateEmail(formData.clientEmail)) {
+                    tempErrors.clientEmail = "The Client Email must be a valid email address.";
+                } else {
+                    tempErrors.clientEmail = "";
+                }
                 break;
-            case 'whatsappWithdrawalNo':
-                if (!formData.whatsappWithdrawalNo) tempErrors.whatsappWithdrawalNo = "The Whatsapp Withdrawl No. field must have a value";
+
+            case 'clientContactNo':
+                if (!formData.clientContactNo) {
+                    tempErrors.clientContactNo = "The Client Contact No. field must have a value";
+                } else {
+                    tempErrors.clientContactNo = "";
+                }
                 break;
-            case 'telegramGroupId':
-                if (!formData.telegramGroupId) tempErrors.telegramGroupId = "The Telegram Group Id/Telegram Channel Id field must have a value";
+
+            case 'category':
+                if (!formData.category) {
+                    tempErrors.category = "The Category field must have a value";
+                } else {
+                    tempErrors.category = "";
+                }
                 break;
-            case 'instaLink':
-                if (!formData.instaLink) tempErrors.instaLink = "The Instagram Id field must have a value";
+
+            case 'description':
+                if (!formData.description) {
+                    tempErrors.description = "The Description field must have a value";
+                } else {
+                    tempErrors.description = "";
+                }
                 break;
-            case 'xLink':
-                if (!formData.xLink) tempErrors.xLink = "The Twitter Id field must have a value";
+
+            case 'targetCountry':
+                if (!formData.targetCountry) {
+                    tempErrors.targetCountry = "The Target Country field must have a value";
+                } else {
+                    tempErrors.targetCountry = "";
+                }
                 break;
-            case 'customerNo':
-                if (!formData.customerNo) tempErrors.customerNo = "The Customer No. field must have a value";
+
+            case 'targetState':
+                if (!formData.targetState) {
+                    tempErrors.targetState = "The Target State field must have a value";
+                } else {
+                    tempErrors.targetState = "";
+                }
                 break;
-            case 'banner1':
-                if (!formData.banner1) tempErrors.banner1 = "The Banner 1 is Required";
+
+            case 'targetCity':
+                if (!formData.targetCity) {
+                    tempErrors.targetCity = "The Target City field must have a value";
+                } else {
+                    tempErrors.targetCity = "";
+                }
                 break;
-            case 'banner2':
-                if (!formData.banner2) tempErrors.banner2 = "The Banner 2 is required";
-                break;
-            case 'banner3':
-                if (!formData.banner3) tempErrors.banner3 = "The Banner 3 is required";
-                break;
-            case 'logo':
-                if (!formData.logo) tempErrors.logo = "The Logo is required";
-                break;
-            case 'sportsCasinoProviders':
-                if (formData.sportsCasinoProviders.length === 0) tempErrors.sportsCasinoProviders = "The Sports Casino Providers field must have a value";
-                break;
-            case 'liveCasinoProviders':
-                if (formData.liveCasinoProviders.length === 0) tempErrors.liveCasinoProviders = "The Live Casino Providers field must have a value";
-                break;
-            case 'slotGameProviders':
-                if (formData.slotGameProviders.length === 0) tempErrors.slotGameProviders = "The Slot Game Providers field must have a value";
-                break;
-            case 'fantasyGameProviders':
-                if (formData.fantasyGameProviders.length === 0) tempErrors.fantasyGameProviders = "The Fantasy Game Providers field must have a value";
-                break;
+
+
+
+
             default:
                 break;
         }
+
+
         setErrors(tempErrors);
     };
 
@@ -170,12 +202,11 @@ const NewClient = () => {
         const isValid = validateStep();
         if (isValid) {
             try {
-                const files = [formData.banner1, formData.banner2, formData.banner3, formData.logo].filter(file => file !== null);
                 await EmailSend(formData, files);
-                toast.success('Form Submitted Successfully!');
+                // toast.success('Form Submitted Successfully!');
                 nextStep();
             } catch (error) {
-                toast.error('Error Form Submission');
+                // console.error(error);
             } finally {
                 setIsLoading(false);
             }
@@ -194,7 +225,7 @@ const NewClient = () => {
                         <header className="flex bg-[#908d89] h-[50px] justify-between items-center">
                             <div className="flex text-sm md:flex-row">
                                 <div className="cursor-pointer py-[0.6rem] md:py-[14px] px-4 md:px-[29px] border-t-2 md:border-t-[3px] bg-white border-black text-[#282f3a]">
-                                    Account Details
+                                    Client Details
                                 </div>
                             </div>
                             <div className="hidden md:block items-center">

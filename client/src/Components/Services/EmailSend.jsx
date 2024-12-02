@@ -1,45 +1,6 @@
 import emailjs from 'emailjs-com';
 import { toast } from 'react-hot-toast';
-import imageCompression from 'browser-image-compression';
-
-const compressImage = async (file) => {
-    const options = {
-        maxSizeMB: 0.03, // Maximum size in MB (30 KB = 0.03 MB)
-        maxWidthOrHeight: 800, // Adjust based on required dimensions
-        useWebWorker: true,
-        maxIteration: 10, // Increase iterations for finer compression
-        initialQuality: 0.7, // Start with lower quality to meet the size constraint
-    };
-    try {
-        let compressedFile = await imageCompression(file, options);
-
-        // Validate the size after compression
-        while (compressedFile.size > 30 * 1024) { // Size in bytes
-            // Reduce quality further if the size is still too large
-            options.initialQuality -= 0.1;
-            if (options.initialQuality < 0.1) break; // Prevent going below minimum quality
-            compressedFile = await imageCompression(file, options);
-        }
-
-        const base64 = await imageCompression.getDataUrlFromFile(compressedFile);
-        return base64;
-    } catch (error) {
-        console.error('Error compressing image:', error);
-        throw error;
-    }
-};
-
-
 const generateEmailContent = async (formData) => {
-    const sportsCasinoProvidersList = Array.isArray(formData.sportsCasinoProviders) ? formData.sportsCasinoProviders.map(provider => `<li>${provider}</li>`).join('') : '';
-    const liveCasinoProvidersList = Array.isArray(formData.liveCasinoProviders) ? formData.liveCasinoProviders.map(provider => `<li>${provider}</li>`).join('') : '';
-    const slotGameProvidersList = Array.isArray(formData.slotGameProviders) ? formData.slotGameProviders.map(provider => `<li>${provider}</li>`).join('') : '';
-    const fantasyGameProvidersList = Array.isArray(formData.fantasyGameProviders) ? formData.fantasyGameProviders.map(provider => `<li>${provider}</li>`).join('') : '';
-
-    const banner1Base64 = await compressImage(formData.banner1);
-    const banner2Base64 = await compressImage(formData.banner2);
-    const banner3Base64 = await compressImage(formData.banner3);
-    const logoBase64 = await compressImage(formData.logo);
 
     return `
         <!DOCTYPE html>
@@ -153,69 +114,18 @@ const generateEmailContent = async (formData) => {
                     <div class="section-heading">General Information</div>
                     <div class="section-content">
                         <ul>
-                            <li><strong>Required Domain:</strong> ${formData.requiredDomain}</li>
-                            <li><strong>WhatsApp Deposit No.:</strong> ${formData.whatsappDepositNo}</li>
-                            <li><strong>WhatsApp Withdrawal No.:</strong> ${formData.whatsappWithdrawalNo}</li>
-                            <li><strong>Telegram Group Id:</strong> ${formData.telegramGroupId}</li>
-                            <li><strong>Instagram Id:</strong> ${formData.instaLink}</li>
-                            <li><strong>Twitter Id:</strong> ${formData.xLink}</li>
-                            <li><strong>Customer No.:</strong> ${formData.customerNo}</li>
+                            <li><strong>Company Name:</strong> ${formData.companyName}</li>
+                            <li><strong>Client Email:</strong> ${formData.clientEmail}</li>
+                            <li><strong>Client Contact No:</strong> ${formData.clientContactNo}</li>
+                            <li><strong>Category:</strong> ${formData.category}</li>
+                            <li><strong>Description:</strong> ${formData.description}</li>
+                            <li><strong>Target Counrty:</strong> ${formData.targetCountry}</li>
+                            <li><strong>Target State:</strong> ${formData.targetState}</li>
+                            <li><strong>Target City:</strong> ${formData.targetCity}</li>
                         </ul>
                     </div>
                 </div>
-                
-                <!-- Providers Section -->
-                <div class="section">
-                    <div class="section-heading">Sports Game Providers</div>
-                    <div class="section-content">
-                        <ul>
-                            ${sportsCasinoProvidersList}
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Providers Section -->
-                <div class="section">
-                    <div class="section-heading">Live Casino Providers</div>
-                    <div class="section-content">
-                        <ul>
-                            ${liveCasinoProvidersList}
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Providers Section -->
-                <div class="section">
-                    <div class="section-heading">Slot Game Providers</div>
-                    <div class="section-content">
-                        <ul>
-                            ${slotGameProvidersList}
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Providers Section -->
-                <div class="section">
-                    <div class="section-heading">Fantasy Game Providers</div>
-                    <div class="section-content">
-                        <ul>
-                            ${fantasyGameProvidersList}
-                        </ul>
-                    </div>
-                </div>
-
-              <div class="section">
-                    <div class="section-heading">Banners</div>
-                    <div class="section-content">
-                        <ul>
-                            <li><strong>Banner 1:</strong> ${banner1Base64}</li>
-                            <li><strong>Banner 2:</strong> ${banner2Base64}</li>
-                            <li><strong>Banner 3:</strong> ${banner3Base64}</li>
-                            <li><strong>logo: </strong> ${logoBase64}</li>
-                        </ul>
-                    </div>
-                </div>
-                                
+                                            
                 <!-- Footer -->
                 <div class="footer">
                     <p>Thank you for choosing our services. For any queries, feel free to reach out to us.</p>
@@ -236,7 +146,7 @@ const EmailSend = async (formData) => {
             import.meta.env.VITE_EMAILJS_SERVICE_ID,
             import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
             {
-                from_name: "Hyatt New Client", // You can replace this with a dynamic value if needed
+                from_name: "Project Form New Client", // You can replace this with a dynamic value if needed
                 html_content: emailContent,
             },
             import.meta.env.VITE_EMAILJS_USER_ID
@@ -245,7 +155,6 @@ const EmailSend = async (formData) => {
         return response;
     } catch (error) {
         toast.error('Error Form Submission');
-        console.log("Error sending email", error.message)
         throw error;
     }
 };
