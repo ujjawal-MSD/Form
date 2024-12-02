@@ -406,7 +406,7 @@ to {
                 <!-- Header -->
                 <div class="header">
                  <div class="header-left">
-                        <img src="https://cc625fa6.form-8xk.pages.dev/images/logo.png" alt="Logo" />
+                        <img src="https://form-8xk.pages.dev/images/logo.png" alt="Logo" />
                     </div>
                     <div class="header-text">
                         <h1>New Client Details</h1>
