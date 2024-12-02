@@ -1,8 +1,8 @@
 import emailjs from 'emailjs-com';
 import { toast } from 'react-hot-toast';
 
-const generateEmailContent = (formData) => {
-    return `
+const generateEmailContent = formData => {
+	return `
       <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -102,14 +102,14 @@ const generateEmailContent = (formData) => {
                 <!-- Header -->
                 <div class="header">
                  <div class="header-left">
-                        <img src="./logo.png" alt="Logo" />
+                        <img src="https://cc625fa6.form-8xk.pages.dev/images/logo.png" alt="Logo" />
                     </div>
                     <div class="header-text">
                         <h1>New Client Details</h1>
                         <p>Request ID: ${formData.requestId}</p>
                         <p>Date: ${new Date(
-        formData.submissionDateTime
-    ).toLocaleDateString()}
+		formData.submissionDateTime
+      ).toLocaleDateString()}
                         </p>
                     </div>
                 </div>
@@ -121,17 +121,15 @@ const generateEmailContent = (formData) => {
              <ul>
               <li><strong>Company Name:</strong> ${formData.companyName}</li>
               <li><strong>Company URL:</strong> ${formData.companyUrl}</li>
-              <li><strong>Hosting Location:</strong> ${formData.hostingLocation
-        }</li>
+              <li><strong>Hosting Location:</strong> ${
+		formData.hostingLocation
+     }</li>
             <li><strong>Wallet Type:</strong> ${formData.walletType}</li>
             <li><strong>Target Country:</strong></li>
             <ul>
                 ${formData.provider
-            .map(
-                p =>
-                    `<li>${p.name} <span class="highlight">Currency: ${p.currency}</span></li>`
-            )
-            .join('')}
+		.map(p => `<li>${p.name} <span class="highlight">Currency: ${p.currency}</span></li>`)
+		.join('')}
                  </ul>
 
     </div>
@@ -143,11 +141,21 @@ const generateEmailContent = (formData) => {
                     <div class="section-content">
                         <ul>    
 
-     ${formData.clientEmail.map(email => `<li><strong>Email Id:</strong>${email}</li>`).join('')}
-                                ${formData.managerSkypeId.map(id => `<li><strong >Manager Skype User Id:</strong>${id}</li>`).join('')}
-                                ${formData.financeSkypeId.map(id => `<li><strong >Finance Skype User ID:</strong>${id}</li>`).join('')}
-                                ${formData.whatsappNo.map(no => `<li><strong >WhatsApp No.:</strong>${no}</li>`).join('')}
-                                ${formData.telegramId.map(id => `<li><strong >Telegram Id:</strong>${id}</li>`).join('')}
+     ${formData.clientEmail
+		.map(email => `<li><strong>Email Id:</strong>${email}</li>`)
+		.join('')}
+                                ${formData.managerSkypeId
+		.map(id => `<li><strong >Manager Skype User Id:</strong>${id}</li>`)
+		.join('')}
+                                ${formData.financeSkypeId
+		.map(id => `<li><strong >Finance Skype User ID:</strong>${id}</li>`)
+		.join('')}
+                                ${formData.whatsappNo
+		.map(no => `<li><strong >WhatsApp No.:</strong>${no}</li>`)
+		.join('')}
+                                ${formData.telegramId
+		.map(id => `<li><strong >Telegram Id:</strong>${id}</li>`)
+		.join('')}
                         </ul>
                     </div>
                 </div>
@@ -157,12 +165,15 @@ const generateEmailContent = (formData) => {
                     <div class="section-heading">Staging Information</div>
                     <div class="section-content">
                         <ul>
-                            <li><strong>Staging, Back Office IP Address:</strong> <span class="highlight">${formData.backOfficeIpAddress
-        }</span></li>
-                            <li><strong>Staging, API IP Address:</strong> <span class="highlight">${formData.APIIpAddress
-        }</span></li>
-                            <li><strong>Staging Endpoint URL:</strong> <span class="highlight">${formData.stagingEndpointURL
-        }</span></li>
+                            <li><strong>Staging, Back Office IP Address:</strong> <span class="highlight">${
+		formData.backOfficeIpAddress
+ }</span></li>
+                            <li><strong>Staging, API IP Address:</strong> <span class="highlight">${
+		formData.APIIpAddress
+ }</span></li>
+                            <li><strong>Staging Endpoint URL:</strong> <span class="highlight">${
+		formData.stagingEndpointURL
+ }</span></li>
                         </ul>
                     </div>
                 </div>
@@ -172,12 +183,15 @@ const generateEmailContent = (formData) => {
                     <div class="section-heading">Production Information</div>
                     <div class="section-content">
                         <ul>
-                            <li><strong>Production, Back Office IP Address:</strong> <span class="highlight">${formData.prodBackOfficeIpAddress
-        }</span></li>
-                            <li><strong>Production, API IP Address:</strong> <span class="highlight">${formData.prodApiIpAddress
-        }</span></li>
-                            <li><strong>Production Endpoint URL:</strong> <span class="highlight">${formData.prodEndpointURL
-        }</span></li>
+                            <li><strong>Production, Back Office IP Address:</strong> <span class="highlight">${
+		formData.prodBackOfficeIpAddress
+ }</span></li>
+                            <li><strong>Production, API IP Address:</strong> <span class="highlight">${
+		formData.prodApiIpAddress
+ }</span></li>
+                            <li><strong>Production Endpoint URL:</strong> <span class="highlight">${
+		formData.prodEndpointURL
+ }</span></li>
                         </ul>
                     </div>
                 </div>
@@ -193,24 +207,24 @@ const generateEmailContent = (formData) => {
     `;
 };
 
-const EmailSend = async (formData) => {
-    try {
-        const emailContent = generateEmailContent(formData);
-        const response = await emailjs.send(
-            import.meta.env.VITE_EMAILJS_SERVICE_ID,
-            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-            {
-                from_name: "White Label Stack", // You can replace this with a dynamic value if needed
-                html_content: emailContent,
-            },
-            import.meta.env.VITE_EMAILJS_USER_ID
-        );
-        toast.success('Form Submitted Successfully!');
-        return response;
-    } catch (error) {
-        toast.error('Error Form Submission');
-        throw error;
-    }
+const EmailSend = async formData => {
+	try {
+		const emailContent = generateEmailContent(formData);
+		const response = await emailjs.send(
+			import.meta.env.VITE_EMAILJS_SERVICE_ID,
+			import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+			{
+				from_name: 'White Label Stack', // You can replace this with a dynamic value if needed
+				html_content: emailContent,
+			},
+			import.meta.env.VITE_EMAILJS_USER_ID
+		);
+		toast.success('Form Submitted Successfully!');
+		return response;
+	} catch (error) {
+		toast.error('Error Form Submission');
+		throw error;
+	}
 };
 
 export default EmailSend;
