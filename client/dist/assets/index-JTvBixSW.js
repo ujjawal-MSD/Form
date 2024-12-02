@@ -420,7 +420,7 @@ self.addEventListener('message', async (e) => {
                 <!-- Header -->
                 <div class="header">
                     <div class="header-left">
-                        <img src="#" alt="Logo" />
+                        <img src="https://hyatt-8v4.pages.dev/images/logo.png" alt="Logo" />
                     </div>
                     <div class="header-text">
                         <h1>Hyatt New Client Details</h1>
