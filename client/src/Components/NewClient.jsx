@@ -31,7 +31,6 @@ const generateRequestId = () => {
 };
 
 
-const whatsappNoRegex = /^\+?[0-9]{1,3}?[0-9]{10,15}$/;
 
 const NewClient = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -142,8 +141,8 @@ const NewClient = () => {
             }
 
 
-            if (formData.whatsappNo.some(whatsapp => !whatsapp.trim() || !whatsappNoRegex.test(whatsapp))) {
-                tempErrors.whatsappNo = "The Whatsapp No. field must have a valid value.";
+            if (formData.whatsappNo.some(whatsapp => !whatsapp.trim())) {
+                tempErrors.whatsappNo = "The Whatsapp No. field must have a value.";
             }
             const duplicateWhatsappNo = checkForDuplicates(formData.whatsappNo);
             if (duplicateWhatsappNo.length > 0) {
@@ -273,7 +272,7 @@ const NewClient = () => {
 
             case "whatsappNo":
                 const whatsappNoErrors = formData.whatsappNo.map((whatsapp) =>
-                    !whatsapp ? "The Whatsapp No. field must have a value." : !whatsappNoRegex.test(whatsapp) ? "The Whatsapp No. must be valid ." : ""
+                    !whatsapp ? "The Whatsapp No. field must have a value." : ""
                 );
                 tempErrors.whatsappNo = whatsappNoErrors;
                 break;
