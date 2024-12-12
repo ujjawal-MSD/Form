@@ -6,16 +6,18 @@ const Form = ({ formData, setFormData, errors, setErrors, handleBlur }) => {
     const [selectedState, setSelectedState] = useState('');
 
     const handleCountryChange = (e) => {
-        const country = e.target.value;
-        setSelectedCountry(country);
+        const countryIsoCode = e.target.value;
+        const country = Country.getAllCountries().find(c => c.isoCode === countryIsoCode);
+        setSelectedCountry(countryIsoCode);
         setSelectedState('');
-        setFormData({ ...formData, targetCountry: country, targetState: '', targetCity: '' });
+        setFormData({ ...formData, targetCountry: country.name, targetState: '', targetCity: '' });
     };
 
     const handleStateChange = (e) => {
-        const state = e.target.value;
-        setSelectedState(state);
-        setFormData({ ...formData, targetState: state, targetCity: '' });
+        const stateIsoCode = e.target.value;
+        const state = State.getStatesOfCountry(selectedCountry).find(s => s.isoCode === stateIsoCode);
+        setSelectedState(stateIsoCode);
+        setFormData({ ...formData, targetState: state.name, targetCity: '' });
     };
 
     const handleCityChange = (e) => {
@@ -126,7 +128,7 @@ const Form = ({ formData, setFormData, errors, setErrors, handleBlur }) => {
                 </label>
                 <select
                     name="targetCountry"
-                    value={formData.targetCountry}
+                    value={selectedCountry}
                     onChange={handleCountryChange}
                     onBlur={() => handleBlur("targetCountry")}
                     className={`mt-2 w-full text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)]
@@ -151,7 +153,7 @@ const Form = ({ formData, setFormData, errors, setErrors, handleBlur }) => {
                     </label>
                     <select
                         name="targetState"
-                        value={formData.targetState}
+                        value={selectedState}
                         onChange={handleStateChange}
                         onBlur={() => handleBlur("targetState")}
                         className={`mt-2 w-full text-sm font-thin border pl-3 rounded-sm p-[6px] shadow-sm border-gray-300 focus:outline-none focus:shadow-[0px_0px_2px_2px_rgba(0,0,0,0.5)]

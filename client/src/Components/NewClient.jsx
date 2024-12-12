@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { toast, Toaster } from 'react-hot-toast';
 import { IoCheckmarkSharp } from "react-icons/io5";
 import Form from "./Form";
 import FinalStep from "./FinalStep";
 import { TailSpin } from 'react-loader-spinner';
-import { toast, Toaster } from 'react-hot-toast';
 import EmailSend from "./Services/EmailSend";
 
 const generateRequestId = () => {
@@ -15,13 +15,11 @@ const generateRequestId = () => {
     return `${year}${month}${day}-${randomNum}`;
 };
 
-
 // Validation Function
 const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
 };
-
 
 const NewClient = () => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -85,7 +83,6 @@ const NewClient = () => {
                 }
                 break;
 
-
             case "clientEmail":
                 if (!formData.clientEmail.trim()) {
                     tempErrors.clientEmail = "The Client Email field must have a value.";
@@ -144,73 +141,35 @@ const NewClient = () => {
                 }
                 break;
 
-
-
-
             default:
                 break;
         }
 
-
         setErrors(tempErrors);
     };
-
-
 
     const nextStep = () => {
         setCurrentStep((prevStep) => prevStep + 1);
     };
-
-    // const handleSubmit = async () => {
-    //     setIsLoading(true);
-    //     const isValid = validateStep();
-    //     if (isValid) {
-    //         try {
-    //             const data = new FormData();
-    //             Object.keys(formData).forEach(key => {
-    //                 if (Array.isArray(formData[key])) {
-    //                     formData[key].forEach(item => data.append(key, item));
-    //                 } else {
-    //                     data.append(key, formData[key]);
-    //                 }
-    //             });
-    //             // const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, data);
-    //             await EmailSend(formData, files);
-    //             toast.success('Form Submitted Successfully!');
-    //             nextStep();
-    //         } catch (error) {
-    //             toast.error('Error Form Submission');
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     } else {
-    //         toast.error('Form validation failed');
-    //         setIsLoading(false);
-    //     }
-    // };
-
-
-
-
-
-
-
-
 
     const handleSubmit = async () => {
         setIsLoading(true);
         const isValid = validateStep();
         if (isValid) {
             try {
-                await EmailSend(formData, files);
-                // toast.success('Form Submitted Successfully!');
+                // console.log('Form data:', formData); // Debugging log
+                await EmailSend(formData);
+                // console.log('Form Submitted Successfully!'); // Debugging log
+                toast.success('Form Submitted Successfully!');
                 nextStep();
             } catch (error) {
-                // console.error(error);
+                // console.error('Error Form Submission', error);
+                toast.error('Error Form Submission');
             } finally {
                 setIsLoading(false);
             }
         } else {
+            // console.error('Form validation failed'); // Debugging log
             toast.error('Form validation failed');
             setIsLoading(false);
         }
